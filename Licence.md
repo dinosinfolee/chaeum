@@ -5,11 +5,23 @@
 채움(Chaeum)은 문서 위에 입력란을 얹어 배포하고, 작성한 내용을 PDF 또는 HTML로
 갈무리하는 단일 파일 도구입니다. 이 저작물의 저작권은 위 저작자에게 있습니다.
 
+## 용어
+
+본 도구는 문서 형태의 자료를 수집하는 일을 돕기 위하여 만들어졌습니다. 이 문서에서는
+다음과 같이 부릅니다.
+
+- **업무 담당자**(이하 담당자) — 본 도구로 양식을 만들어 배포하고, 회신된 자료를
+  거두어 관리하는 사람
+- **작성자** — 배포된 양식을 받아 내용을 채우는 사람
+
+자료를 수집하기로 정하고 그 범위를 정하는 주체는 담당자이므로, 수집한 자료에 대한
+책임 또한 담당자에게 있습니다.
+
 ## 허용
 
-- 학교를 포함한 공공기관에서 **업무와 교육 목적으로 자유롭게 사용**하는 것
+- 개인·학교·공공기관에서 **업무와 교육 목적으로 자유롭게 사용**하는 것
 - 도구가 만들어 낸 **양식 파일과 출력물을 제한 없이 배포**하는 것
-  (선생님이 채움으로 만든 신청서·보고서는 온전히 그 선생님의 것입니다)
+  (담당자가 채움으로 만든 신청서·보고서는 온전히 그 담당자의 것입니다)
 - 배포된 원본 파일(`채움.html`)을 **고치지 않은 채 그대로 전달**하는 것
 
 ## 금지
@@ -27,6 +39,15 @@
 어떠한 보증도 하지 않으며, 이용 과정에서 생긴 자료의 손실이나 손해에 대하여
 책임지지 않습니다. 중요한 문서는 반드시 별도로 갈무리하여 두시기 바랍니다.
 
+이 도구는 문서와 입력 내용을 저작자나 제3자에게 전송하지 않습니다. 다만 담당자가
+구글 연동과 제출 기능을 쓰는 경우, 양식의 구성과 작성 내용은 **담당자 본인의 구글
+계정**으로 전달되어 그 계정의 설문지와 시트에 쌓입니다.
+
+**수집할 자료의 범위를 정하는 일, 작성자에게 그 뜻을 알리고 동의를 받는 일, 회신된
+자료의 보관·파기, 그리고 개인정보를 비롯한 민감 정보에 대한 보안 처리(암호 설정·
+접근 제한 등)는 전적으로 담당자의 책임입니다.** 저작자는 본 도구로 수집된 자료를
+보유하지 않으며, 그 처리에 관여하지 않습니다.
+
 ---
 
 # Chaeum — Copyright and Terms of Use
@@ -37,11 +58,24 @@ Chaeum is a single-file tool that overlays fillable fields on an existing
 document, distributes it as a form, and saves the completed result as a PDF or
 an HTML file. Copyright in this work belongs to the author named above.
 
+## Definitions
+
+This tool is built to help collect information in document form. In this
+document:
+
+- **Administrator** — the person who builds and distributes a form with this
+  tool and who collects and manages the returned data
+- **Respondent** — the person who receives the form and fills it in
+
+Because it is the administrator who decides to collect the data and defines its
+scope, responsibility for the collected data rests with the administrator.
+
 ## Permitted
 
-- **Use for work and educational purposes**, free of charge, by schools, and public institutions
+- **Use for work and educational purposes**, free of charge, by individuals,
+  schools, and public institutions
 - **Unrestricted distribution of the forms and output files** produced with the
-  tool (a form you create with Chaeum is entirely yours)
+  tool (a form the administrator creates with Chaeum is entirely theirs)
 - **Redistribution of the released file** (`채움.html`) **as-is, unmodified**
 
 ## Not permitted
@@ -61,11 +95,23 @@ including fitness for a particular purpose, and is not liable for any loss of
 data or other damages arising from its use. Please keep your own copies of
 important documents.
 
+This tool sends no document or entered content to the author or to any third
+party. If the administrator enables the Google integration and the submit
+feature, the form definition and the entered content are sent to **the
+administrator's own Google account** and stored in that account's Form and
+Sheet.
+
+**Deciding what data to collect, informing respondents and obtaining their
+consent, retaining and disposing of the returned data, and securing sensitive
+or personal information — including passwords and access control — are entirely
+the administrator's responsibility.** The author holds none of the data
+collected with this tool and takes no part in its processing.
+
 ---
 
 # 제3자 구성 요소 · Third-Party Components
 
-채움은 아래 저작물을 포함하거나 불러와 사용합니다. 각 저작물의 권리는 원저작자에게
+채움은 아래 저작물을 포함하거나 불러와 씁니다. 각 저작물의 권리는 원저작자에게
 있으며, 아래 고지는 해당 라이선스가 요구하는 바에 따라 그대로 유지되어야 합니다.
 
 Chaeum includes or loads the works listed below. All rights in them belong to
@@ -76,7 +122,7 @@ their licenses.
 
 ### PDF.js — Apache License 2.0
 
-원본 PDF를 화면에 출력 시 사용합니다. / Used to render source PDFs on screen.
+원본 PDF를 화면에 그리는 데 씁니다. / Used to render source PDFs on screen.
 
 ```
 Copyright 2012 Mozilla Foundation and contributors
@@ -98,7 +144,7 @@ limitations under the License.
 
 ### pdf-lib — MIT License
 
-PDF를 만들고 글자를 얹는 데 사용합니다. / Used to create PDFs and draw text.
+PDF를 만들고 글자를 얹는 데 씁니다. / Used to create PDFs and draw text.
 
 ```
 Copyright (c) 2019 Andrew Dillon
@@ -126,7 +172,7 @@ SOFTWARE.
 
 ### @pdf-lib/fontkit — MIT License
 
-PDF에 글꼴을 심는 데 사용합니다. Devon Govett의 fontkit을 Andrew Dillon이 갈래
+PDF에 글꼴을 심는 데 씁니다. Devon Govett의 fontkit을 Andrew Dillon이 갈래
 친 것입니다. / Used to embed fonts in PDFs; a fork by Andrew Dillon of fontkit
 by Devon Govett.
 
