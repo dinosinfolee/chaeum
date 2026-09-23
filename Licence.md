@@ -2,51 +2,52 @@
 
 **© 2026 Sani. All rights reserved.**
 
-채움(Chaeum)은 문서 위에 입력란을 얹어 배포하고, 작성한 내용을 PDF 또는 HTML로
-갈무리하는 단일 파일 도구입니다. 이 저작물의 저작권은 위 저작자에게 있습니다.
+채움(Chaeum)은 기존 문서에 입력 영역을 배치하여 양식을 생성하고, 작성된 내용을
+PDF 또는 HTML 형식으로 저장하는 단일 파일 도구입니다. 본 저작물의 저작권은 상기
+저작자에게 있습니다.
 
 ## 용어
 
-본 도구는 문서 형태의 자료를 수집하는 일을 돕기 위하여 만들어졌습니다. 이 문서에서는
-다음과 같이 부릅니다.
+본 도구는 문서 형식의 자료 수집을 지원할 목적으로 개발되었으며, 본 문서에서는
+다음과 같이 정의합니다.
 
-- **업무 담당자**(이하 담당자) — 본 도구로 양식을 만들어 배포하고, 회신된 자료를
-  거두어 관리하는 사람
-- **작성자** — 배포된 양식을 받아 내용을 채우는 사람
+- **업무 담당자**(이하 담당자) — 본 도구로 양식을 제작·배포하고, 회신된 자료를
+  수합·관리하는 자
+- **작성자** — 배포된 양식을 수령하여 내용을 기입하는 자
 
-자료를 수집하기로 정하고 그 범위를 정하는 주체는 담당자이므로, 수집한 자료에 대한
+자료의 수집 여부와 그 범위를 결정하는 주체는 담당자이므로, 수집한 자료에 대한 관리
 책임 또한 담당자에게 있습니다.
 
 ## 허용
 
-- 개인·학교·공공기관에서 **업무와 교육 목적으로 자유롭게 사용**하는 것
-- 도구가 만들어 낸 **양식 파일과 출력물을 제한 없이 배포**하는 것
-  (담당자가 채움으로 만든 신청서·보고서는 온전히 그 담당자의 것입니다)
-- 배포된 원본 파일(`채움.html`)을 **고치지 않은 채 그대로 전달**하는 것
+- 학교를 포함한 공공기관에서 **업무와 교육 목적으로 자유롭게 사용**하는 것
+- 본 도구가 생성한 **양식 파일과 출력물을 제한 없이 배포**하는 것
+  (담당자가 채움으로 제작한 신청서·보고서의 권리는 전적으로 담당자에게 있습니다)
+- 배포된 원본 파일(`채움.html`)을 **수정 없이 원본 그대로 전달**하는 것
 
 ## 금지
 
-- 코드의 전부 또는 일부를 **다른 저작물에 옮겨 싣는 것**
-- **저작자 표시를 지우거나 바꾸어** 배포하는 것
+- 코드의 전부 또는 일부를 **타 저작물에 포함**시키는 것
+- **저작자 표시를 삭제하거나 변경하여** 배포하는 것
 - **판매·구독·광고 등 영리 목적**으로 이용하거나 재배포하는 것
-- 개작하여 **다른 이름의 도구로 내놓는 것**
+- 개작하여 **별도 명칭의 도구로 공개·배포**하는 것
 
-위 범위를 넘는 이용은 저작자의 사전 서면 동의가 있어야 합니다.
+상기 범위를 초과하는 이용은 저작자의 사전 서면 동의를 요합니다.
 
 ## 보증의 부인
 
-이 도구는 **있는 그대로** 제공됩니다. 저작자는 특정 목적에의 적합성을 포함하여
-어떠한 보증도 하지 않으며, 이용 과정에서 생긴 자료의 손실이나 손해에 대하여
-책임지지 않습니다. 중요한 문서는 반드시 별도로 갈무리하여 두시기 바랍니다.
+본 도구는 **현 상태 그대로** 제공됩니다. 저작자는 특정 목적에의 적합성을 포함하여
+어떠한 보증도 하지 아니하며, 이용 과정에서 발생한 자료의 손실 및 손해에 대하여
+책임지지 않습니다. 중요한 문서는 반드시 별도의 보안 처리를 하여 두시기 바랍니다.
 
-이 도구는 문서와 입력 내용을 저작자나 제3자에게 전송하지 않습니다. 다만 담당자가
-구글 연동과 제출 기능을 쓰는 경우, 양식의 구성과 작성 내용은 **담당자 본인의 구글
-계정**으로 전달되어 그 계정의 설문지와 시트에 쌓입니다.
+본 도구는 문서와 입력 내용을 저작자 또는 제3자에게 전송하지 않습니다. 다만 담당자가
+구글 연동 및 제출 기능을 사용하는 경우, 양식의 구성과 작성 내용은 **담당자 본인의
+구글 계정**으로 전달되어 해당 계정의 설문지와 시트에 기록됩니다.
 
-**수집할 자료의 범위를 정하는 일, 작성자에게 그 뜻을 알리고 동의를 받는 일, 회신된
-자료의 보관·파기, 그리고 개인정보를 비롯한 민감 정보에 대한 보안 처리(암호 설정·
-접근 제한 등)는 전적으로 담당자의 책임입니다.** 저작자는 본 도구로 수집된 자료를
-보유하지 않으며, 그 처리에 관여하지 않습니다.
+**수집 범위의 결정, 작성자에 대한 고지 및 동의의 취득, 회신 자료의 보관과 파기,
+그리고 개인정보를 비롯한 민감 정보의 보안 조치(암호 설정·접근 제한 등)는 전적으로
+담당자의 책임입니다.** 저작자는 본 도구로 수집된 자료를 보유하지 아니하며, 그 처리에
+관여하지 않습니다.
 
 ---
 
@@ -68,12 +69,13 @@ document:
 - **Respondent** — the person who receives the form and fills it in
 
 Because it is the administrator who decides to collect the data and defines its
-scope, responsibility for the collected data rests with the administrator.
+scope, responsibility for managing the collected data also rests with the
+administrator.
 
 ## Permitted
 
-- **Use for work and educational purposes**, free of charge, by individuals,
-  schools, and public institutions
+- **Free use for work and educational purposes** by public institutions,
+  including schools
 - **Unrestricted distribution of the forms and output files** produced with the
   tool (a form the administrator creates with Chaeum is entirely theirs)
 - **Redistribution of the released file** (`채움.html`) **as-is, unmodified**
@@ -92,8 +94,8 @@ Any use beyond the scope above requires the author's prior written consent.
 
 This tool is provided **as is**. The author makes no warranty of any kind,
 including fitness for a particular purpose, and is not liable for any loss of
-data or other damages arising from its use. Please keep your own copies of
-important documents.
+data or other damages arising from its use. Please apply your own security
+measures to important documents.
 
 This tool sends no document or entered content to the author or to any third
 party. If the administrator enables the Google integration and the submit
@@ -111,8 +113,8 @@ collected with this tool and takes no part in its processing.
 
 # 제3자 구성 요소 · Third-Party Components
 
-채움은 아래 저작물을 포함하거나 불러와 씁니다. 각 저작물의 권리는 원저작자에게
-있으며, 아래 고지는 해당 라이선스가 요구하는 바에 따라 그대로 유지되어야 합니다.
+채움은 다음 저작물을 포함하거나 호출하여 사용합니다. 각 저작물의 권리는 원저작자에게
+있으며, 하기 고지는 해당 라이선스가 요구하는 바에 따라 원문 그대로 유지되어야 합니다.
 
 Chaeum includes or loads the works listed below. All rights in them belong to
 their respective authors, and the notices below must be retained as required by
@@ -122,7 +124,7 @@ their licenses.
 
 ### PDF.js — Apache License 2.0
 
-원본 PDF를 화면에 그리는 데 씁니다. / Used to render source PDFs on screen.
+원본 PDF의 화면 표시에 사용합니다. / Used to render source PDFs on screen.
 
 ```
 Copyright 2012 Mozilla Foundation and contributors
@@ -144,7 +146,7 @@ limitations under the License.
 
 ### pdf-lib — MIT License
 
-PDF를 만들고 글자를 얹는 데 씁니다. / Used to create PDFs and draw text.
+PDF 생성 및 문자 출력에 사용합니다. / Used to create PDFs and draw text.
 
 ```
 Copyright (c) 2019 Andrew Dillon
@@ -172,9 +174,9 @@ SOFTWARE.
 
 ### @pdf-lib/fontkit — MIT License
 
-PDF에 글꼴을 심는 데 씁니다. Devon Govett의 fontkit을 Andrew Dillon이 갈래
-친 것입니다. / Used to embed fonts in PDFs; a fork by Andrew Dillon of fontkit
-by Devon Govett.
+PDF에 글꼴을 포함시키는 데 사용합니다. Devon Govett의 fontkit에서 Andrew Dillon이
+파생한 저작물입니다. / Used to embed fonts in PDFs; a fork by Andrew Dillon of
+fontkit by Devon Govett.
 
 ```
 Copyright (c) 2014 Devon Govett
@@ -202,9 +204,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## 글꼴 · Fonts
 
-아래 글꼴은 모두 **SIL Open Font License 1.1** 로 배포됩니다. 이 라이선스는
-글꼴을 문서나 프로그램에 심어 함께 나누어 주는 것을 허용하며, 글꼴 자체를 따로
-떼어 판매하는 것만을 금지합니다.
+하기 글꼴은 모두 **SIL Open Font License 1.1** 로 배포됩니다. 본 라이선스는 글꼴을
+문서 또는 프로그램에 포함하여 배포하는 것을 허용하며, 글꼴 자체를 단독으로 판매하는
+행위만을 금지합니다.
 
 All fonts below are licensed under the **SIL Open Font License 1.1**, which
 permits bundling and redistributing them with a document or program, and
