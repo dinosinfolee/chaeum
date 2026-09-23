@@ -77,7 +77,7 @@ their licenses.
 
 ### PDF.js — Apache License 2.0
 
-원본 PDF를 화면에 그리는 데 사용합니다. / Used to render source PDFs on screen.
+원본 PDF를 화면에 출력 시 사용합니다. / Used to render source PDFs on screen.
 
 ```
 Copyright 2012 Mozilla Foundation and contributors
