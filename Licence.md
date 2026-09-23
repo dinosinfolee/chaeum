@@ -39,8 +39,7 @@ an HTML file. Copyright in this work belongs to the author named above.
 
 ## Permitted
 
-- **Use for work and educational purposes**, free of charge, by individuals,
-  schools, and public institutions
+- **Use for work and educational purposes**, free of charge, by schools, and public institutions
 - **Unrestricted distribution of the forms and output files** produced with the
   tool (a form you create with Chaeum is entirely yours)
 - **Redistribution of the released file** (`채움.html`) **as-is, unmodified**
