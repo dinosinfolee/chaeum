@@ -62,15 +62,11 @@ including fitness for a particular purpose, and is not liable for any loss of
 data or other damages arising from its use. Please keep your own copies of
 important documents.
 
-## Contact
-
-○○○ (○○○@example.com)
-
 ---
 
 # 제3자 구성 요소 · Third-Party Components
 
-채움은 아래 저작물을 포함하거나 불러와 씁니다. 각 저작물의 권리는 원저작자에게
+채움은 아래 저작물을 포함하거나 불러와 사용합니다. 각 저작물의 권리는 원저작자에게
 있으며, 아래 고지는 해당 라이선스가 요구하는 바에 따라 그대로 유지되어야 합니다.
 
 Chaeum includes or loads the works listed below. All rights in them belong to
@@ -81,7 +77,7 @@ their licenses.
 
 ### PDF.js — Apache License 2.0
 
-원본 PDF를 화면에 그리는 데 씁니다. / Used to render source PDFs on screen.
+원본 PDF를 화면에 그리는 데 사용합니다. / Used to render source PDFs on screen.
 
 ```
 Copyright 2012 Mozilla Foundation and contributors
@@ -103,7 +99,7 @@ limitations under the License.
 
 ### pdf-lib — MIT License
 
-PDF를 만들고 글자를 얹는 데 씁니다. / Used to create PDFs and draw text.
+PDF를 만들고 글자를 얹는 데 사용합니다. / Used to create PDFs and draw text.
 
 ```
 Copyright (c) 2019 Andrew Dillon
@@ -131,7 +127,7 @@ SOFTWARE.
 
 ### @pdf-lib/fontkit — MIT License
 
-PDF에 글꼴을 심는 데 씁니다. Devon Govett의 fontkit을 Andrew Dillon이 갈래
+PDF에 글꼴을 심는 데 사용합니다. Devon Govett의 fontkit을 Andrew Dillon이 갈래
 친 것입니다. / Used to embed fonts in PDFs; a fork by Andrew Dillon of fontkit
 by Devon Govett.
 
