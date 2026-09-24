@@ -8242,6 +8242,8 @@ ${sheetLink.on ? `
   ]);
 
   const btns = $$("#dlgBtns .btn");
+  // 무엇으로 받을지 고르기 전에는 내보낼 수 없다
+  if (sheetLink.on) btns[btns.length - 1].disabled = true;
   $("#mPattern").value = S.pattern || PAT_DEF;
 
   // 담당자가 마저 채워야 하는 칸이 있으면 HTML 회신을 기본으로 둔다
