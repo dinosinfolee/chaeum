@@ -6834,7 +6834,7 @@ function bindPicker(btn, opts, get, set, mixedLabel) {
   btn.onclick = e => {
     e.stopPropagation();
     closeMenu();
-    const cur = get() === null || get() === undefined ? " " : String(get());
+    const cur = get() === null || get() === undefined ? " " : String(get());
     const m = document.createElement("div");
     m.className = "menu";
     m.innerHTML = opts.map(o =>
