@@ -2432,8 +2432,13 @@ body.preview-on #crMark { display: none; }
   border-bottom: 1px solid var(--border-soft);
   font-size: 12px; font-weight: 800; letter-spacing: .02em; color: var(--text-faint);
 }
-.ex-col .field-row { margin-top: 18px; }
-.ex-col .field-row:first-of-type { margin-top: 0 !important; }
+.ex-col > .field-row {
+  margin-top: 0;
+  padding: 18px 0;
+  border-top: 1px solid var(--border-soft);
+}
+.ex-col > .field-row.no-rule { border-top: 0; padding-top: 0; }
+.ex-col > .field-row:last-child { padding-bottom: 0; }
 .lb-ex {
   flex: 1; min-width: 0; margin-left: 8px;
   font-size: 11.5px; font-weight: 500; color: var(--text-muted);
@@ -9864,7 +9869,6 @@ ${sheetLink.on ? `
             '개 있으므로 <b>HTML</b>을 함께 선택하십시오. 회신 파일에서 담당자 항목을 이어서 작성할 수 있습니다.</div>' : ""}
       </div>
     </div>` : ""}
-    <div id="stepRest">
 
     <div class="field-row" id="rowPat">
       <label class="field-label lb-big lb-row">회신 받을 파일의 이름 규칙
@@ -9924,7 +9928,6 @@ ${sheetLink.on ? `
     </div>` : ""}
     </div>
     </div>
-    </div>
   `, [
     { label: "취소" },
     { label: "내보내기", primary: true, keepOpen: true }
@@ -9980,6 +9983,17 @@ ${sheetLink.on ? `
     const el = $("#patEx");
     if (el) el.textContent = exOf();
   };
+  /* 칸마다 보이는 첫 줄에는 가름선을 두지 않는다 */
+  const ruleFix = () => {
+    $$(".ex-col").forEach(col => {
+      let first = true;
+      $$(":scope > .field-row", col).forEach(row => {
+        const vis = !row.hidden;
+        row.classList.toggle("no-rule", vis && first);
+        if (vis) first = false;
+      });
+    });
+  };
   let askMail = !!S.askMail;
   const mailSw = $("#mMail");
   if (mailSw) {
@@ -10009,6 +10023,7 @@ ${sheetLink.on ? `
     // 파일을 회신받지 않으면 파일명 규칙도 정할 까닭이 없다
     const pat = $("#rowPat");
     if (pat) pat.hidden = sheetLink.on && !(collect.html || collect.pdf);
+    ruleFix();
     if (whoRef.paint) whoRef.paint();
   };
   const fdShow = () => {};
