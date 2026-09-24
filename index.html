@@ -1108,17 +1108,16 @@ body.start #btnName { display: none; }
 
 /* 메모 - 문서 곁에 붙여 두는 쪽지 */
 #memoTool {
-  position: absolute; left: 12px; top: 12px; z-index: 80;
-  width: 36px; height: 36px; padding: 0;
+  position: absolute; left: 10px; top: 10px; z-index: 80;
+  width: 34px; height: 34px; padding: 0;
   display: inline-flex; align-items: center; justify-content: center;
-  border: 1px solid var(--border); border-radius: var(--radius-lg);
-  background: #fff; color: var(--text-muted);
-  box-shadow: var(--shadow); cursor: pointer;
-  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  border: 0; border-radius: 8px; background: transparent;
+  color: var(--text-faint); cursor: pointer;
+  transition: color 120ms ease, transform 120ms ease;
 }
-#memoTool:hover { background: var(--accent-bg); color: var(--accent-hover); border-color: var(--accent-border); }
-#memoTool.on { background: #F5B301; border-color: #D79B00; color: #3A2E00; }
-#memoTool svg { width: 18px; height: 18px; }
+#memoTool:hover { color: var(--text-muted); transform: scale(1.06); }
+#memoTool.on { color: #D79B00; }
+#memoTool svg { width: 26px; height: 26px; }
 body.memo-arm #stage, body.memo-arm .pglayer { cursor: copy; }
 .memo-note {
   position: absolute; z-index: 9;
