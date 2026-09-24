@@ -1142,7 +1142,9 @@ body.start #tbar { display: none !important; }
 .row-inline > .num-field { flex: 1; min-width: 0; }
 
 
-/* 웹 콘텐츠 단추는 옆 아이콘들과 같은 낯으로 둔다 — 지정 여부는 도움말로 알린다 */
+/* 콘텐츠를 지정해 두면 아이콘이 노랑에서 주황으로 물든다 */
+#btnBot.on svg { stroke: url(#botGrad); }
+#btnBot.on:hover svg { stroke: url(#botGrad); }
 
 /* 문서 위에 보이는 표 */
 .box-tbl {
@@ -2040,6 +2042,7 @@ body.start #side { display: none !important; }
   color: var(--text-muted); text-decoration: none;
   border-bottom: 1px solid transparent;
 }
+#crMark a.cr-own { color: var(--text-faint); }
 #crMark a:hover { color: var(--accent); border-bottom-color: currentColor; }
 
 /* ---------- 모달 ---------- */
@@ -2364,10 +2367,20 @@ body:not(.booting) #boot { opacity: 0; pointer-events: none; }
   <div id="dlgBtns"></div>
 </div></div>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="botGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFC53D"/>
+      <stop offset="100%" stop-color="#F76707"/>
+    </linearGradient>
+  </defs>
+</svg>
+
 <div id="crMark">
-  <span>&copy; 2026 Sani. All rights reserved.</span>
-  <a href="https://dinosinfolee.github.io/chaeum/CopyrightTerms.html"
-     target="_blank" rel="noopener">저작권 및 이용 조건 확인 바로가기</a>
+  <a class="cr-own" href="https://dinosinfolee.github.io/chaeum/CopyrightTerms.html"
+     target="_blank" rel="noopener" data-tip="저작권 및 이용 조건">&copy; 2026 Sani. All rights reserved.</a>
+  <a href="https://docs.google.com/spreadsheets/d/1HMmuDvPKjrnOq5RR3R7psbJwzHfH94MB7lEPHpDN-_U/copy"
+     target="_blank" rel="noopener">응답 수집용 시트 사본 만들기</a>
 </div>
 
 <div id="busy"><div class="spin"></div><div id="busyTxt"></div></div>
@@ -8528,7 +8541,7 @@ ${sheetLink.on ? `
 /* ---------- 웹 콘텐츠 ---------- */
 function paintBotBtn() {
   const b = $("#btnBot");
-  b.classList.remove("on");
+  b.classList.toggle("on", !!S.bot);
   b.dataset.tip = S.bot ? "웹 콘텐츠 — 지정됨" : "웹 콘텐츠";
 }
 
