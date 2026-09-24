@@ -2051,9 +2051,8 @@ body.start #side { display: none !important; }
 #crMark a.cr-own { color: var(--text-faint); }
 #crMark a.cr-tip { font-weight: 500; color: var(--text-muted); }
 #crMark a.cr-tip .emo { font-size: 10.5px; }
-/* 미리보기에서는 작성 화면의 안내와 겹치므로 오른쪽으로 물린다 */
-body.preview-on #crMark { left: auto; right: 15px; align-items: flex-end; text-align: right; }
-body.preview-on #crMark a { align-self: flex-end; }
+/* 미리보기에서는 작성 화면만 보이도록 감춘다 */
+body.preview-on #crMark { display: none; }
 #crMark a.cr-tip:hover { color: var(--accent); }
 #crMark a:hover { color: var(--accent); border-bottom-color: currentColor; }
 
