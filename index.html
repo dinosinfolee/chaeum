@@ -8680,7 +8680,14 @@ function driveExists(name, docName) {
 function askOverwrite(name, share) {
   return new Promise(resolve => {
     dialogWarn("같은 이름의 파일이 있습니다",
-      "<b>" + escapeHtml(name) + "</b> 이(가) 이미 저장되어 있습니다. 덮어쓰시겠습니까?",
+      "<b>" + escapeHtml(name) + "</b> 이(가) 이미 저장되어 있습니다. 덮어쓰시겠습니까?" +
+      '<div class="note" style="margin-top:12px">' + svgWrap(ICO_SHIELD) +
+      '<span class="nt"><span class="nt-hd">' +
+      (share ? "배포용 양식 원본" : "담당자 보관용 작업본") + "</span>" +
+      (share
+        ? "작성자에게 전달되는 양식이다. 덮어쓰면 이미 배포한 URL은 그대로 유지되고 내용만 갱신된다."
+        : "담당자가 보관하는 작업본이며, 작성자에게 배포되지 않는다. 배포용 원본과는 별개의 파일이다.") +
+      "</span></div>",
       [{ label: "취소", act: () => resolve(null) },
        { label: "새 이름으로", act: () => resolve("copy") },
        { label: "덮어쓰기", primary: true, act: () => resolve("overwrite") }]);
