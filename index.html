@@ -1247,6 +1247,17 @@ body.start #tbar { display: none !important; }
 }
 .set-pop .menu-label:first-child { margin-top: 1px; }
 .sp-name { width: 100%; height: 30px; }
+/* 드라이브에서 불러오기 목록 */
+.dv-list { display: flex; flex-direction: column; gap: 4px; max-height: 46vh; overflow-y: auto; }
+.dv-item {
+  display: flex; flex-direction: column; gap: 2px; align-items: flex-start;
+  padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px;
+  background: #fff; cursor: pointer; text-align: left;
+  font-family: inherit; transition: background 120ms ease, border-color 120ms ease;
+}
+.dv-item:hover { background: var(--accent-bg); border-color: var(--accent-border); }
+.dv-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.dv-sub  { font-size: 11.5px; color: var(--text-faint); }
 /* 선택 묶음 */
 .g-row { display: flex; align-items: center; gap: 7px; }
 .g-row .sp-cap { margin: 0; }
@@ -8286,8 +8297,82 @@ $("#fileName").onclick = () => {
   };
 };
 
-/* ---------- 파일 열기 ---------- */
-$("#btnOpen").onclick = () => $("#filePick").click();
+/* ---------- 파일 열기 ----------
+   시트에서 열었으면 이 컴퓨터와 드라이브 두 곳에서 고를 수 있다. */
+function driveAsk(type, doneType, extra) {
+  return new Promise(resolve => {
+    if (!sheetLink.on) { resolve(null); return; }
+    let done = false;
+    const finish = v => {
+      if (done) return;
+      done = true;
+      window.removeEventListener("message", onMsg);
+      clearTimeout(timer);
+      resolve(v);
+    };
+    const onMsg = e => {
+      const d = e.data;
+      if (!d || d.app !== "chaeum" || d.type !== doneType) return;
+      finish(d);
+    };
+    window.addEventListener("message", onMsg);
+    const timer = setTimeout(() => finish(null), 60000);
+    window.opener.postMessage(Object.assign({ app: "chaeum", type }, extra || {}), "*");
+  });
+}
+
+async function openFromDrive() {
+  busy(true, "보관한 양식을 찾는 중…");
+  const res = await driveAsk("listFiles", "listFilesDone");
+  busy(false);
+  const files = (res && res.files) || [];
+  if (!files.length) {
+    dialog("보관한 양식이 없습니다",
+      "드라이브의 <b>Chaeum</b> 폴더에 저장된 양식이 없습니다. 먼저 양식을 저장하여 주십시오.",
+      [{ label: "확인", primary: true }]);
+    return;
+  }
+  dialog("내 드라이브에서 불러오기",
+    '<div class="dv-list">' + files.map((f, i) =>
+      '<button class="dv-item" type="button" data-i="' + i + '">' +
+      '<span class="dv-name">' + escapeHtml(f.name) + "</span>" +
+      '<span class="dv-sub">' + escapeHtml(f.folder) + " · " + escapeHtml(f.at) + "</span></button>").join("") +
+    "</div>",
+    [{ label: "취소" }]);
+  $$("#dlgBody .dv-item").forEach(b => {
+    b.onclick = async () => {
+      const f = files[Number(b.dataset.i)];
+      $("#ovl").classList.remove("show");
+      busy(true, "양식을 불러오는 중…");
+      const got = await driveAsk("readFile", "readFileDone", { id: f.id });
+      busy(false);
+      if (!got || !got.b64) { toast("양식을 불러오지 못하였습니다", "err", 5000); return; }
+      const bytes = b64ToBytes(got.b64);
+      loadFormFile(new File([bytes], got.name || f.name, { type: "text/html" }));
+    };
+  });
+}
+
+$("#btnOpen").onclick = e => {
+  if (!sheetLink.on) { $("#filePick").click(); return; }
+  closeMenu();
+  const m = document.createElement("div");
+  m.className = "menu";
+  m.innerHTML = '<div class="menu-label">불러오기</div>' +
+    '<div class="menu-item" data-v="pc">' +
+      svgWrap('<rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8 20h8"/>') + "내 컴퓨터에서</div>" +
+    '<div class="menu-item" data-v="drive">' +
+      svgWrap('<path d="M8.5 3.5h7l5.5 9.5-3.5 6h-11l-3.5-6z"/><path d="M8.5 3.5 5 13h14"/>') + "내 드라이브에서</div>";
+  const r = e.currentTarget.getBoundingClientRect();
+  placeMenu(m, r.left, r.bottom + 6, r.top);
+  m.addEventListener("click", ev => {
+    const it = ev.target.closest(".menu-item");
+    if (!it) return;
+    closeMenu();
+    if (it.dataset.v === "pc") $("#filePick").click();
+    else openFromDrive();
+  });
+};
 $("#pagePick").onchange = e => {
   const f = e.target.files[0];
   e.target.value = "";
