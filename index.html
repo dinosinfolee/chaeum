@@ -1453,8 +1453,8 @@ body.start #tbar { display: none !important; }
 }
 .tt-edit {
   width: 40px; height: 22px; padding: 0 2px; margin: 0 1px;
-  border: 1px solid var(--accent); border-radius: 5px; outline: none;
-  background: #fff; color: var(--text);
+  border: 0; border-radius: 5px; outline: none;
+  background: transparent; color: var(--text);
   font-family: inherit; font-size: 11.5px; font-weight: 700; text-align: center;
   font-variant-numeric: tabular-nums;
 }
@@ -5242,8 +5242,27 @@ function fieldTools(f, box, pg) {
     }
     if (mid) h += grp(mid) + sep;
 
-    h += grp(btn("size", "개체 크기", ICO.size) +
-             (setPopNeeded(f) ? btn("set", "설정", ICO.gear) : ""));
+    /* 개체 크기 — 표가 아니면 도구 띠에서 바로 고친다 */
+    if (f.type === "table") {
+      h += grp(btn("size", "개체 크기", ICO.size) +
+               (setPopNeeded(f) ? btn("set", "설정", ICO.gear) : ""));
+    } else {
+      const szTxt = isH => {
+        const v = same(x => {
+          const pg = S.pages[x.page];
+          return pg ? Math.round(isH ? x.h * pg.ph : x.w * pg.pw) : 0;
+        });
+        return v === null ? "—" : v;
+      };
+      const szBox = (k, cap) =>
+        '<span class="nt-cap3">' + cap + "</span>" +
+        '<span class="tt-num">' +
+        '<button class="tt" data-a="' + k + '-" data-tip="' + cap + ' 줄이기">&#8722;</button>' +
+        '<span class="tt-val" data-s="' + k + '">' + szTxt(k === "h") + "</span>" +
+        '<button class="tt" data-a="' + k + '+" data-tip="' + cap + ' 늘리기">&#43;</button></span>';
+      h += grp(szBox("w", "너비") + szBox("h", "높이") +
+               (setPopNeeded(f) ? btn("set", "설정", ICO.gear) : ""));
+    }
 
     /* 여기서부터는 이 개체에만 있는 것 */
     g = "";
@@ -5280,14 +5299,56 @@ function fieldTools(f, box, pg) {
       x.ondblclick = e => e.stopPropagation();
       x.onclick = e => { e.stopPropagation(); run(x.dataset.a, x); };
     });
-    const val = $(".tt-val", bar);
+    const val = $(".tt-val:not([data-s])", bar);
     if (val) {
       val.title = "눌러서 직접 입력";
       val.onmousedown = e => e.stopPropagation();
       val.ondblclick = e => e.stopPropagation();
       val.onclick = e => { e.stopPropagation(); editSizeVal(fs, val); };
     }
+    $$(".tt-val[data-s]", bar).forEach(el => {
+      const isH = el.dataset.s === "h";
+      el.title = "눌러서 직접 입력 (pt)";
+      el.onmousedown = e => e.stopPropagation();
+      el.ondblclick = e => e.stopPropagation();
+      el.onclick = e => {
+        e.stopPropagation();
+        const pg = S.pages[f.page];
+        const now = pg ? Math.round(isH ? f.h * pg.ph : f.w * pg.pw) : 0;
+        editFsVal(el, now, v => { if (v >= 4) sizeAll(isH, v); else renderBoxes(); }, 700);
+      };
+    });
   };
+
+  /* 고른 개체의 너비나 높이를 한꺼번에 고친다 — 가운데는 그대로 둔다 */
+  const sizeAll = (isH, v) => all(x => {
+    const pg = S.pages[x.page];
+    if (!pg) return;
+    if (isH) {
+      const cy = x.y + x.h / 2;
+      x.h = Math.min(1, Math.max(0.002, v / pg.ph));
+      x.y = Math.max(0, Math.min(1 - x.h, cy - x.h / 2));
+    } else {
+      const cx = x.x + x.w / 2;
+      x.w = Math.min(1, Math.max(0.002, v / pg.pw));
+      x.x = Math.max(0, Math.min(1 - x.w, cx - x.w / 2));
+    }
+  });
+  const sizeStep = (isH, d) => all(x => {
+    const pg = S.pages[x.page];
+    if (!pg) return;
+    const now = Math.round(isH ? x.h * pg.ph : x.w * pg.pw);
+    const v = Math.max(4, Math.min(700, now + d));
+    if (isH) {
+      const cy = x.y + x.h / 2;
+      x.h = Math.min(1, Math.max(0.002, v / pg.ph));
+      x.y = Math.max(0, Math.min(1 - x.h, cy - x.h / 2));
+    } else {
+      const cx = x.x + x.w / 2;
+      x.w = Math.min(1, Math.max(0.002, v / pg.pw));
+      x.x = Math.max(0, Math.min(1 - x.w, cx - x.w / 2));
+    }
+  });
 
   const bump = d => all(x => {
     x.fontSize = Math.max(4, Math.min(72, (x.fontSize || 11) + d));
@@ -5344,6 +5405,10 @@ function fieldTools(f, box, pg) {
     if (a === "req")   { const v = !f.required; return all(x => { x.required = v; }); }
     if (a === "sz-")   return bump(-1);
     if (a === "sz+")   return bump(1);
+    if (a === "w-")    return sizeStep(false, -2);
+    if (a === "w+")    return sizeStep(false, 2);
+    if (a === "h-")    return sizeStep(true, -2);
+    if (a === "h+")    return sizeStep(true, 2);
     if (a === "del")   return removeField(f.id);
     if (a === "ink") return inkPop(f, anchor);
     if (a.slice(0, 3) === "va-") {
