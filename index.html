@@ -5431,6 +5431,10 @@ function tblPop(f, anchor, ci) {
   m.innerHTML =
     '<label class="sw-line bare" id="spGrid"><span class="sw-tx">격자 그리기</span><span class="sw"></span></label>' +
     '<label class="sw-line bare" id="spNo"><span class="sw-tx">행 번호 표시</span><span class="sw"></span></label>' +
+    (f.rowNo
+      ? '<label class="sw-line bare" id="spNoLink"><span class="sw-tx">행 번호로 스탬프 찾아가기' +
+        '<span class="sw-sub">작성자가 번호를 누르면 같은 번호의 스탬프로 갑니다</span></span><span class="sw"></span></label>'
+      : "") +
     '<label class="sw-line bare" id="spCm"><span class="sw-tx">천 단위 자릿점</span><span class="sw"></span></label>' +
     (num
       ? '<div class="menu-label">' + escapeHtml(col.name || "고른 열") + '</div>' +
@@ -5439,7 +5443,12 @@ function tblPop(f, anchor, ci) {
   const r = anchor.getBoundingClientRect();
   placeMenu(m, r.left, r.bottom + 6, r.top);
   bindSw($("#spGrid", m), () => f.grid !== false,  v => { f.grid = v; renderBoxes(); });
-  bindSw($("#spNo", m),   () => !!f.rowNo,         v => { f.rowNo = v; renderBoxes(); });
+  bindSw($("#spNo", m),   () => !!f.rowNo,         v => {
+    f.rowNo = v;
+    renderBoxes();
+    tblPop(f, anchor, ci);                 // 딸린 스위치가 함께 나타나고 사라진다
+  });
+  bindSw($("#spNoLink", m), () => !!f.noLink,      v => { f.noLink = v; renderBoxes(); });
   bindSw($("#spCm", m),   () => f.comma !== false, v => { f.comma = v; renderBoxes(); });
   if (num) bindNumFmt(m, col, "spDec", "spRnd", () => renderBoxes());
 }
