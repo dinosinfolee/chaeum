@@ -1142,7 +1142,13 @@ body.start #tbar { display: none !important; }
 .row-inline > .num-field { flex: 1; min-width: 0; }
 
 
-/* 콘텐츠를 지정해 두면 아이콘이 노랑에서 주황으로 물든다 */
+/* 콘텐츠를 지정해 두면 아이콘도 단추도 노랑에서 주황으로 물든다 */
+#btnBot.on {
+  background: #FFF7E8;
+  border-color: #F3C98B;
+  color: #C97A08;
+}
+#btnBot.on:hover:not(:disabled) { background: #FFEFD4; border-color: #E9A94E; }
 #btnBot.on svg { stroke: url(#botGrad); }
 #btnBot.on:hover svg { stroke: url(#botGrad); }
 
