@@ -3431,8 +3431,9 @@ function autoName(type, selfId) {
   return TYPE_LABEL[type] + " " + n;
 }
 /* 유형 바꾸기 — 이름을 손대지 않았다면 기본 이름도 따라 바꾼다 */
-/* 표를 놓을 때마다 일러 둔다 */
+/* 표를 놓을 때마다 일러 둔다 — 시트로 수합하는 담당자에게만 해당한다 */
 function tableNotice() {
+  if (!sheetLink.from) return;
   setTimeout(() => {
     dialog("표 추가",
       "표가 수백 행에 이르면 구글 시트로 제출할 때 정상적으로 저장되지 않을 수 있습니다.",
