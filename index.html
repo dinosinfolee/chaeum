@@ -2079,10 +2079,8 @@ body.start #tbar { display: none !important; }
 .box.flash { animation: boxFlash 900ms cubic-bezier(.4,0,.2,1) 2; z-index: 6; }
 .box.admin.flash { animation-name: boxFlashAdmin; }
 .box.locked { border-color: var(--text-faint); background: rgba(145,144,140,.16); }
-/* 고정 링크 — 회색 덩이가 아니라 링크로 보이게 둔다 */
-.box.link-fix { border-color: #9EC5EC; background: rgba(35,131,226,.06); }
-.box.link-fix .lbl { background: #3C87D6; }
-.box-text.lk span { color: #1B6FC4; text-decoration: underline; text-underline-offset: 2px; }
+/* 고정 링크 — 편집기에서는 고정 문구와 같은 낯으로 두되, 밑줄로 링크임을 알린다 */
+.box-text.lk span { text-decoration: underline; text-underline-offset: 2px; }
 .box.admin  { border-color: var(--warn); background: rgba(217,115,13,.13); }
 .box.check, .box.calc { border-style: dashed; }
 .box .lbl {
@@ -4288,9 +4286,7 @@ function renderBoxes() {
     const b = document.createElement("div");
     b.className = "box" +
       (S.multi.includes(f.id) ? " sel" : "") +
-      (f.admin ? " admin"
-               : (f.type === "link" && f.fixed) ? " locked link-fix"
-               : (noInput(f) ? " locked" : "")) +
+      (f.admin ? " admin" : (noInput(f) ? " locked" : "")) +
       (f.type === "check" ? " check" : "") +
       (f.type === "calc" ? " calc" : "");
     b.style.left   = (f.x * 100) + "%";
