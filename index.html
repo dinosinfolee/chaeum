@@ -2625,7 +2625,6 @@ const TYPES = [
   { v: "fixed",     label: "고정 문구", icon: '<polyline points="4 7 4 4 20 4 20 7"/><path d="M12 4v16"/><path d="M9 20h6"/>' },
   { v: "expr",      label: "수식",   icon: '<text x="3.2" y="17.5" font-family="Georgia,serif" font-style="italic" font-size="14" font-weight="700" fill="currentColor" stroke="none">fx</text>' },
   { v: "stamp",     label: "스탬프", icon: '<path d="M9.5 4L8 20"/><path d="M17 4l-1.5 16"/><path d="M4.5 9.2h15"/><path d="M4 14.8h15"/>' },
-  { v: "calc",      label: "계산",   icon: '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8"/><path d="M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/>' },
   { v: "table",     label: "표",     icon: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M3 14.5h18"/><path d="M9 9v11"/><path d="M15 9v11"/>' }
 ];
 const TYPE_LABEL = Object.fromEntries(TYPES.map(t => [t.v, t.label]));
@@ -9539,7 +9538,7 @@ ${sheetLink.on ? `
       </div>
       <div class="help-box" id="colHelpBox" hidden>
         <div class="hb-row"><b>스프레드시트</b> 항목별 값이 시트에 한 행으로 기록됩니다. 로그인 없이도 제출할 수 있습니다.</div>
-        <div class="hb-row"><b>기록 범위</b> 시트에는 글자만 정리됩니다. <b>단답·수치·서술·날짜·시간·선택·링크·수식·계산</b>이 열로 만들어지며, <b>그림과 표, 고정 문구</b>는 담기지 않습니다. 제출 파일을 함께 수합하는 경우 보관 폴더의 링크가 「파일」 열에 남으므로, 표와 그림은 그 파일에서 확인합니다.</div>
+        <div class="hb-row"><b>기록 범위</b> 시트에는 글자만 정리됩니다. <b>단답·수치·서술·날짜·시간·선택·링크·수식·스탬프·서명</b>이 열로 만들어지며, <b>그림과 표, 고정 문구</b>는 담기지 않습니다. 제출 파일을 함께 수합하는 경우 보관 폴더의 링크가 「파일」 열에 남으므로, 표와 그림은 그 파일에서 확인합니다.</div>
         <div class="hb-row"><b>서명</b> 그림 파일로 보관 폴더에 저장되고, 시트의 해당 열에는 그 파일의 링크가 적힙니다.</div>
         <div class="hb-row"><b>HTML</b> 작성 내용이 담긴 양식 파일을 그대로 수집합니다. 담당자 입력 항목을 이어서 작성할 수 있습니다.</div>
         <div class="hb-row"><b>PDF</b> 서식이 고정된 문서로 수집합니다. 결재와 보관에 적합합니다.</div>
