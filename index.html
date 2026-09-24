@@ -4982,12 +4982,12 @@ function paintNewType() {
     bar.innerHTML =
       '<span class="nt-set nt-types"><span class="nt-cap">기본 개체</span>' +
       TYPES.map(x => '<button class="tt wide nt-type' + (x.v === newType ? " on" : "") +
-        '" data-v="' + x.v + '" data-tip="' + x.label + '">' +
+        '" data-v="' + x.v + '">' +
         svgWrap(x.icon) + "<span>" + x.label + "</span></button>").join("") +
       "</span>" +
       '<span class="tt-sep"></span>' +
       '<span class="nt-set"><span class="nt-cap2">글꼴</span>' +
-      '<button class="tt wide nt-font" data-tip="기본 글꼴"><span>' +
+      '<button class="tt wide nt-font"><span>' +
       fontDef(newFont).label + "</span>" + CARET + "</button>" +
       numBox2("fs", "글꼴 크기") + "</span>" +
       '<span class="tt-sep"></span>' +
