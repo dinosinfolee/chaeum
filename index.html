@@ -5985,13 +5985,14 @@ function fieldTools(f, box, pg) {
     let mid = "";
     if (f.type === "link") {
       /* 사슬 아이콘 뒤에 누가 적는지를 옅게 겹쳐 둔다 — 담당자는 방패, 작성자는 사람 */
+      /* 사슬은 또렷하게 앞에 두고, 몫을 알리는 아이콘은 뒤에서 살짝 겹쳐 연하게 */
       const CHAIN =
-        '<g transform="translate(-0.8,-1.2) scale(0.62)" stroke-width="2.6">' +
+        '<g transform="translate(-2.3,-3.4) scale(0.88)" stroke-width="2.2">' +
         '<path d="M10.5 13a4.4 4.4 0 0 0 6.6.4l2.6-2.6a4.4 4.4 0 0 0-6.2-6.2L12 5.9"/>' +
         '<path d="M13.5 11a4.4 4.4 0 0 0-6.6-.4L4.3 13.2a4.4 4.4 0 0 0 6.2 6.2L11.5 18"/></g>';
       const ROLE = f.fixed
-        ? '<g transform="translate(8.6,8.6) scale(0.68)" stroke-width="2.6"><path d="M12 3l8 3.6v5.2c0 4.4-3.2 8.3-8 9.2-4.8-.9-8-4.8-8-9.2V6.6z"/><path d="M9 12l2 2 4-4"/></g>'
-        : '<g transform="translate(8.6,8.6) scale(0.68)" stroke-width="2.6"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-3.6 3.3-6.2 7.5-6.2s7.5 2.6 7.5 6.2"/></g>';
+        ? '<g transform="translate(6.4,6.2) scale(0.82)" stroke-width="2.3" opacity="0.6"><path d="M12 3l8 3.6v5.2c0 4.4-3.2 8.3-8 9.2-4.8-.9-8-4.8-8-9.2V6.6z"/><path d="M9 12l2 2 4-4"/></g>'
+        : '<g transform="translate(6.4,6.2) scale(0.82)" stroke-width="2.3" opacity="0.6"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-3.6 3.3-6.2 7.5-6.2s7.5 2.6 7.5 6.2"/></g>';
       mid += btn("lfix", f.fixed ? "고정 링크 — 담당자가 미리 적어 둡니다" : "작성자 링크 — 작성자가 적습니다",
                  CHAIN + ROLE, f.fixed ? "on" : "");
     }
