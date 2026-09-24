@@ -1037,7 +1037,24 @@ body:not(.start) #fileName:hover { background: var(--bg-hover); border-color: va
   border: 1px solid var(--border); border-radius: var(--radius);
   background: #fff; cursor: pointer; user-select: none;
 }
-.ck-line.ck-sm { flex: none; width: 118px; height: 34px; padding: 0 10px; }
+.ck-line.bare { border: 0; background: transparent; padding: 0; }
+.ck-line.ck-sm { flex: none; width: 92px; height: 34px; }
+/* 쪽번호와 딸린 설정을 한 틀에 담는다 */
+.ck-box {
+  padding: 4px 12px 6px;
+  border: 1px solid var(--border); border-radius: var(--radius); background: #fff;
+}
+.ck-box .sw-line.bare { margin: 0; padding: 6px 0 4px; }
+.ck-box .sw-line.bare[hidden] { display: none; }
+.ck-box .ck-sub .sw-tx { font-weight: 500; color: var(--text-muted); }
+.pp-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin: 2px 0 4px;
+}
+.ck-line.ck-mini { height: 26px; }
+.ck-line.ck-mini .ck-tx { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+.ck-line.ck-mini.on .ck-tx { color: var(--text); }
+.pp-tip { font-size: 11.5px; color: var(--text-faint); }
 .ck-line .ck {
   flex: none; width: 17px; height: 17px; border-radius: 5px;
   border: 1.5px solid var(--border-strong); background: #fff;
@@ -3586,35 +3603,36 @@ function docSetPop() {
         <div class="pp-cell pp-r">${mmBox("r")}</div>
         <div class="pp-cell pp-b">${mmBox("b")}</div>
       </div>
-      <div class="hint" id="ppHint">이름표를 끌어 자리를 옮깁니다.</div>
-      <label class="sw-line bare" id="swGuide">
-        <span class="sw-tx">여백 안내선 표시<span class="sw-sub">편집기에서만 보이며 인쇄물에는 나오지 않습니다</span></span>
-        <span class="sw"></span>
-      </label>
+      <div class="pp-foot">
+        <label class="ck-line bare ck-mini" id="swGuide"><span class="ck"></span><span class="ck-tx">여백 안내선 표시</span></label>
+        <span class="pp-tip">이름표를 끌어 자리를 옮깁니다</span>
+      </div>
     </div>
 
     <div class="field-row" style="margin-top:16px">
       <label class="field-label lb-big">표시할 항목</label>
-      <label class="ck-line" id="ckNo"><span class="ck"></span><span class="ck-tx">쪽번호</span></label>
-      <label class="sw-line bare" id="swTot" style="margin-top:6px">
-        <span class="sw-tx">전체 쪽수 함께 표시<span class="sw-sub">1 / 3 처럼 적습니다</span></span>
-        <span class="sw"></span>
-      </label>
+      <div class="ck-box">
+        <label class="ck-line bare" id="ckNo"><span class="ck"></span><span class="ck-tx">쪽번호</span></label>
+        <label class="sw-line bare ck-sub" id="swTot">
+          <span class="sw-tx">전체 쪽수 함께 표시<span class="sw-sub">1 / 3 처럼 적습니다</span></span>
+          <span class="sw"></span>
+        </label>
+      </div>
 
       <div class="fd-row" style="margin-top:9px">
-        <label class="ck-line ck-sm" id="ckHd"><span class="ck"></span><span class="ck-tx">머리글</span></label>
+        <label class="ck-line bare ck-sm" id="ckHd"><span class="ck"></span><span class="ck-tx">머리글</span></label>
         <input class="input hf-tx" id="hdTx" maxlength="200" value="${escapeHtml(hd.text)}">
       </div>
       <div class="fd-row" style="margin-top:7px">
-        <label class="ck-line ck-sm" id="ckFt"><span class="ck"></span><span class="ck-tx">꼬리글</span></label>
+        <label class="ck-line bare ck-sm" id="ckFt"><span class="ck"></span><span class="ck-tx">꼬리글</span></label>
         <input class="input hf-tx" id="ftTx" maxlength="200" value="${escapeHtml(ft.text)}">
       </div>
     </div>
 
     <div class="field-row" style="margin-top:16px">
-      <label class="field-label lb-big">작성 화면</label>
+      <label class="field-label lb-big">작성자 수정 허용</label>
       <label class="sw-line bare" id="swClone">
-        <span class="sw-tx">작성자가 면을 더할 수 있게 함<span class="sw-sub">복제 레이아웃으로 지정한 면을 골라 붙입니다</span></span>
+        <span class="sw-tx">작성자가 페이지를 추가할 수 있도록 함<span class="sw-sub">복제 레이아웃으로 지정한 페이지를 골라 붙입니다</span></span>
         <span class="sw"></span>
       </label>
     </div>
@@ -3738,13 +3756,13 @@ function docSetPop() {
   };
 
   const paint = () => {
-    $(".sw", $("#swGuide")).classList.toggle("on", guide);
+    $("#swGuide").classList.toggle("on", guide);
     $(".sw", $("#swClone")).classList.toggle("on", clone);
     $(".sw", $("#swTot")).classList.toggle("on", no.total);
     $("#ckNo").classList.toggle("on", marks.no.on);
     $("#ckHd").classList.toggle("on", marks.hd.on);
     $("#ckFt").classList.toggle("on", marks.ft.on);
-    $("#swTot").style.display = marks.no.on ? "" : "none";
+    $("#swTot").hidden = !marks.no.on;
     $("#hdTx").disabled = !marks.hd.on;
     $("#ftTx").disabled = !marks.ft.on;
     paintEdge();
