@@ -2151,9 +2151,11 @@ body.preview-on #crMark { display: none; }
 .token.tag.today:hover { background: rgba(217,115,13,.08); border-color: #E2C39B; color: #B45309; }
 #boot {
   position: fixed; inset: 0; z-index: 9999;
-  background: var(--bg);
-  transition: opacity 180ms ease;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 11px;
+  background: rgba(250,250,249,.94); backdrop-filter: blur(7px);
+  transition: opacity 200ms ease;
 }
+#boot .bt { font-size: 12.5px; font-weight: 600; color: var(--text-muted); letter-spacing: -0.01em; }
 body:not(.booting) #boot { opacity: 0; pointer-events: none; }
 
 .draft-card {
@@ -2198,7 +2200,7 @@ body:not(.booting) #boot { opacity: 0; pointer-events: none; }
 </head>
 <body class="start booting">
 
-<div id="boot"></div>
+<div id="boot"><div class="spin"></div><div class="bt">불러오는 중…</div></div>
 
 <div id="top">
   <span id="brand"><img class="logo" src="data:image/png;base64,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" alt="">채움</span>
@@ -3078,7 +3080,10 @@ async function askDraft() {
   }
 
   if (d && d.pages && d.pages.length) applyDraft(d);
-  document.body.classList.remove("booting");
+  /* 화면에 다 그려진 뒤에 가림막을 걷는다 — 첫 화면이 얼비치지 않도록 */
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.body.classList.remove("booting");
+  }));
 }
 
 /* ---------- 유틸 ---------- */
@@ -4561,18 +4566,30 @@ function namePop(f, anchor) {
 /* 고른 범위의 행 높이나 열 너비를 고르게 맞춘다 — 합은 그대로 두고 나누어 준다 */
 function evenSpan(f, isCol) {
   const s = tblSel;
-  if (!s || s.id !== f.id || s.kind !== "range") return;
-  const r1 = Math.min(s.tr, s.tr2), r2 = Math.max(s.tr, s.tr2);
-  const c1 = Math.min(s.tc, s.tc2), c2 = Math.max(s.tc, s.tc2);
+  if (!s || s.id !== f.id) return;
+  const lines = tableLines(f);
+  let r1 = 0, r2 = lines - 1, c1 = 0, c2 = f.cols.length - 1;
+  if (s.kind === "range") {
+    r1 = Math.min(s.tr, s.tr2); r2 = Math.max(s.tr, s.tr2);
+    c1 = Math.min(s.tc, s.tc2); c2 = Math.max(s.tc, s.tc2);
+  } else if (s.kind === "cells" && (s.cells || []).length) {
+    const rs = s.cells.map(x => x.tr), cs = s.cells.map(x => x.tc);
+    r1 = Math.min.apply(null, rs); r2 = Math.max.apply(null, rs);
+    c1 = Math.min.apply(null, cs); c2 = Math.max.apply(null, cs);
+  }
+  /* 한 줄만 골랐거나 칸 하나만 골랐으면 표 전체를 고르게 맞춘다 */
+  if (isCol && c2 <= c1) { c1 = 0; c2 = f.cols.length - 1; }
+  if (!isCol && r2 <= r1) { r1 = 0; r2 = lines - 1; }
+
   if (isCol) {
-    if (c2 <= c1) { toast("두 열 이상을 골라야 합니다", null, 1700); return; }
+    if (c2 <= c1) return;
     let sum = 0;
     for (let i = c1; i <= c2; i++) sum += f.cols[i].w;
     const v = Math.max(0.2, Math.round((sum / (c2 - c1 + 1)) * 100) / 100);
     for (let i = c1; i <= c2; i++) f.cols[i].w = v;
     toast("열 너비를 고르게 맞추었습니다", null, 1700);
   } else {
-    if (r2 <= r1) { toast("두 행 이상을 골라야 합니다", null, 1700); return; }
+    if (r2 <= r1) return;
     const wts = lineWeights(f);
     let sum = 0;
     for (let i = r1; i <= r2; i++) sum += wts[i] || 1;
@@ -5605,6 +5622,9 @@ function tableUI(f, box, skin, pg) {
         c.style.boxShadow = "";
       }
     });
+    $$(".tc.rowno", skin).forEach(c => {
+      c.classList.toggle("pick-col", !!sel && sel.kind === "no");
+    });
     colH.classList.toggle("picked", !!sel && (sel.kind === "col" || sel.kind === "cell"));
     rowH.classList.toggle("picked", !!sel && (sel.kind === "row" || sel.kind === "cell"));
     box.classList.toggle("tbl-locked", !!sel);
@@ -5653,6 +5673,24 @@ function tableUI(f, box, skin, pg) {
       typeMenu(f, Number(ico.dataset.ci), ico);
     };
   });
+  /* 행 번호 칸 — 눌러서 그 열을 통째로 고른다. 글자 크기는 여기서 정한다. */
+  $$(".tc.rowno", skin).forEach(c => {
+    c.style.cursor = "pointer";
+    c.title = "행 번호 열 선택";
+    c.addEventListener("mousedown", e => {
+      if (e.button !== 0) return;
+      e.stopPropagation();
+      blurInput();
+      rng = null;
+      spot = null;
+      touched = true;
+      tblSel = { id: f.id, kind: "no", tr: cur.tr, tc: cur.tc };
+      locked = true;
+      paint();
+    });
+    c.addEventListener("dblclick", e => e.stopPropagation());
+  });
+
   $$(".tc", skin).filter(c => c.dataset.tr !== undefined).forEach(c => {
     c.addEventListener("mouseenter", e => {
       if (dragging && e.buttons === 1) {        // 끌어서 범위를 넓힌다
@@ -5898,6 +5936,8 @@ function tableUI(f, box, skin, pg) {
 
   /* 고른 칸들의 글자 크기 — 섞여 있으면 null */
   function fsOfSel() {
+    const sel0 = tblSel && tblSel.id === f.id ? tblSel : null;
+    if (sel0 && sel0.kind === "no") return f.noFs || 0;
     const t = targetCells();
     if (!t.length) return 0;
     const v = effFs(f, t[0].tr, t[0].tc);
@@ -5906,6 +5946,12 @@ function tableUI(f, box, skin, pg) {
   /* 고른 칸들의 크기를 바꾼다. 열 손잡이로 골랐으면 열의 기본값을 바꾼다. */
   function setFs(mut) {
     const sel = tblSel && tblSel.id === f.id ? tblSel : null;
+    if (sel && sel.kind === "no") {                   // 행 번호 열
+      const v = mut(f.noFs || Math.round(f.fontSize || 11));
+      f.noFs = v ? Math.max(4, Math.min(72, v)) : 0;
+      renderBoxes(); renderProps();
+      return;
+    }
     if (sel && sel.kind === "col") {
       const c2 = f.cols[cur.tc];
       c2.fontSize = mut(c2.fontSize || f.fontSize || 11);
@@ -8394,8 +8440,8 @@ document.addEventListener("keydown", e => {
     toast("개체 " + S.multi.length + "개를 선택하였습니다", null, 1800);
     return;
   }
-  /* 표에서 범위를 고른 채라면 H·W 로 고르게 맞춘다 */
-  if (!mod && (key === "h" || key === "w") && tblSel && tblSel.kind === "range") {
+  /* 표의 칸을 고른 채라면 H·W 로 고르게 맞춘다 */
+  if (!mod && (key === "h" || key === "w") && tblSel) {
     const tf = S.fields.find(x => x.id === tblSel.id && x.type === "table");
     if (tf) { e.preventDefault(); evenSpan(tf, key === "w"); return; }
   }
