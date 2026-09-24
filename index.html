@@ -1269,6 +1269,7 @@ body.start #tbar { display: none !important; }
 .g-row { display: flex; align-items: center; gap: 7px; }
 .g-row .sp-cap { margin: 0; }
 .g-row .g-num { width: 68px; text-align: center; }
+.g-due { flex: 1; min-width: 0; }
 .g-of { margin-left: auto; font-size: 11.5px; color: var(--text-faint); }
 .g-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .g-chip {
@@ -2454,7 +2455,8 @@ const S = {
   pattern:  PAT_DEF,   // 작성자가 저장할 때의 파일명 규칙
   outMode:  "",        // "pdf" | "html" | "both" — 비우면 양식에 맞추어 정한다
   collect:  { sheet: true, html: false, pdf: false },   // 시트 연동 시 수합 방식
-  folder:   { id: "", name: "" }                        // 수합 파일을 둘 곳 (비우면 Chaeum/문서명)
+  folder:   { id: "", name: "" },                       // 수합 파일을 둘 곳 (비우면 Chaeum/문서명)
+  submitCfg: { identify: "domain", closesAt: "", onePerUser: true }   // 제출 자격·마감·횟수
 };
 
 /* 예전 판의 "data" | "file" | "both" 를 지금 꼴로 옮긴다 */
@@ -2764,7 +2766,8 @@ function keepDraft() {
         pattern: S.pattern,
         outMode: S.outMode,
         collect: S.collect,
-        folder: S.folder
+        folder: S.folder,
+        submitCfg: S.submitCfg
       });
     } catch (e) { /* 자리가 모자라면 조용히 넘어간다 */ }
   }, 1200);
@@ -2778,6 +2781,7 @@ function applyDraft(d) {
   S.groups  = d.groups || [];
   S.collect = fixCollect(d.collect);
   S.folder  = d.folder || { id: "", name: "" };
+  S.submitCfg = d.submitCfg || { identify: "domain", closesAt: "", onePerUser: true };
   S.seq     = d.seq || (S.fields.length + 1);
   S.bot     = d.bot || "";
   S.pattern = d.pattern || "{문서명}";
@@ -7856,6 +7860,28 @@ $("#btnMake").onclick = () => {
     .map(f => '<span class="token" data-t="' + escapeHtml(f.name) + '">{' + escapeHtml(f.name) + "}</span>").join("");
 
   dialog("내보내기 설정", `
+${sheetLink.on ? `
+    <div class="field-row">
+      <label class="field-label">회신 및 수합 방식</label>
+      <div class="seg" id="mCollect">
+        <button type="button" data-v="sheet">스프레드시트</button>
+        <button type="button" data-v="html">HTML</button>
+        <button type="button" data-v="pdf">PDF</button>
+      </div>
+      <div class="hint" id="colHint"></div>
+    </div>
+    <div class="field-row" id="rowFolder">
+      <label class="field-label">수합 파일 저장 위치</label>
+      <div class="fd-row">
+        <span class="fd-now" id="fdNow"></span>
+        <button class="btn btn-sm" id="fdPick" type="button">변경</button>
+      </div>
+      <div id="fdFind" hidden>
+        <input class="input" id="fdQ" placeholder="폴더 이름으로 찾기">
+        <div class="dv-list" id="fdList"></div>
+      </div>
+    </div>
+    <hr class="divider">` : ""}
     <div class="field-row" id="rowPat">
       <label class="field-label">회신 받을 파일명 규칙</label>
       <input class="input" id="mPattern" placeholder="[제출] {문서명}_{성명}">
@@ -7879,24 +7905,25 @@ $("#btnMake").onclick = () => {
 ${sheetLink.on ? `
     <hr class="divider">
     <div class="field-row">
-      <label class="field-label">수합 방식</label>
-      <div class="seg" id="mCollect">
-        <button type="button" data-v="sheet">스프레드시트</button>
-        <button type="button" data-v="html">HTML</button>
-        <button type="button" data-v="pdf">PDF</button>
+      <label class="field-label">제출 자격</label>
+      <div class="seg" id="mWho">
+        <button type="button" data-v="domain">우리 조직 계정만</button>
+        <button type="button" data-v="google">구글 계정</button>
+        <button type="button" data-v="none">로그인 없이</button>
       </div>
-      <div class="hint" id="colHint"></div>
+      <div class="hint" id="whoHint"></div>
     </div>
-    <div class="field-row" id="rowFolder">
-      <label class="field-label">수합 파일 저장 위치</label>
+    <div class="field-row">
+      <label class="field-label">제출 제한</label>
       <div class="fd-row">
-        <span class="fd-now" id="fdNow"></span>
-        <button class="btn btn-sm" id="fdPick" type="button">변경</button>
+        <span class="sp-cap">마감</span>
+        <input class="input g-due" id="mDue" placeholder="예: 2026-10-01 18:00">
+        <button class="btn btn-sm" id="mDueClr" type="button">지우기</button>
       </div>
-      <div id="fdFind" hidden>
-        <input class="input" id="fdQ" placeholder="폴더 이름으로 찾기">
-        <div class="dv-list" id="fdList"></div>
-      </div>
+      <label class="sw-line bare" id="mOnce" style="margin-top:6px">
+        <span class="sw-tx">1인 1회만 제출</span><span class="sw"></span>
+      </label>
+      <div class="hint" id="dueHint"></div>
     </div>` : ""}
 
     ${noName ? note(ICO_WARN, "명칭 없는 개체 " + noName + "개",
@@ -8011,6 +8038,76 @@ ${sheetLink.on ? `
     colHint();
     fdShow();
 
+    /* 제출 자격 · 마감 · 횟수 */
+    let who = Object.assign({ identify: "domain", closesAt: "", onePerUser: true }, S.submitCfg || {});
+    let domain = "";
+    driveAsk("sheetInfo", "sheetInfoDone").then(r => {
+      domain = (r && r.domain) || "";
+      whoPaint();
+    });
+    const wSeg = $("#mWho");
+    const whoPaint = () => {
+      const personal = !domain || /^(gmail|googlemail)\.com$/i.test(domain);
+      const dBtn = $$("button", wSeg).find(b => b.dataset.v === "domain");
+      if (dBtn) {
+        dBtn.disabled = personal;
+        dBtn.style.opacity = personal ? ".45" : "";
+      }
+      const eff = (personal && who.identify === "domain") ? "google" : who.identify;
+      $$("button", wSeg).forEach(b => b.classList.toggle("on", b.dataset.v === eff));
+      $("#whoHint").innerHTML =
+        eff === "domain"
+          ? (personal
+              ? "개인 구글 계정에는 조직이 없어 사용할 수 없습니다."
+              : "<b>" + escapeHtml(domain) + "</b> 계정으로 로그인해야 제출할 수 있으며, <b>제출자의 이메일이 함께 수집됩니다.</b>")
+          : eff === "google"
+          ? "구글 계정으로 로그인하면 조직 밖에서도 제출할 수 있으며, <b>제출자의 이메일이 함께 수집됩니다.</b>"
+          : "로그인 없이 제출합니다. 제출자를 확인할 수 없으므로 <b>성명 개체</b>를 배치하여 주십시오.";
+      const once = $("#mOnce");
+      if (once) {
+        const off = eff === "none";
+        once.style.opacity = off ? ".45" : "";
+        once.style.pointerEvents = off ? "none" : "";
+        $(".sw", once).classList.toggle("on", !off && who.onePerUser !== false);
+      }
+    };
+    $$("button", wSeg).forEach(b => {
+      b.onclick = () => { if (b.disabled) return; who.identify = b.dataset.v; whoPaint(); };
+    });
+    $("#mOnce").onclick = e => {
+      e.preventDefault();
+      if (who.identify === "none") return;
+      who.onePerUser = who.onePerUser === false;
+      whoPaint();
+    };
+    const dueEl = $("#mDue");
+    dueEl.value = (who.closesAt || "").replace("T", " ");
+    dueEl.onkeydown = e => e.stopPropagation();
+    const dueHint = () => {
+      $("#dueHint").textContent = who.closesAt
+        ? "정한 시각이 지나면 더 이상 받지 않습니다."
+        : "비워 두면 마감 없이 계속 받습니다.";
+    };
+    const dueRead = () => {
+      const v = dueEl.value.trim();
+      const m = /^(\d{4})[-.\/ ](\d{1,2})[-.\/ ](\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?$/.exec(v);
+      if (!v) { who.closesAt = ""; dueHint(); return; }
+      if (!m) { $("#dueHint").innerHTML = "<span style=\"color:var(--danger)\">예: 2026-10-01 18:00</span>"; return; }
+      const p2 = n => String(n).padStart(2, "0");
+      who.closesAt = m[1] + "-" + p2(m[2]) + "-" + p2(m[3]) + "T" + p2(m[4] || 18) + ":" + (m[5] || "00");
+      dueHint();
+    };
+    dueEl.oninput = dueRead;
+    $("#mDueClr").onclick = () => { dueEl.value = ""; who.closesAt = ""; dueHint(); };
+    dueHint();
+    whoPaint();
+    window.__who = () => {
+      const personal = !domain || /^(gmail|googlemail)\.com$/i.test(domain);
+      return Object.assign({}, who, {
+        identify: (personal && who.identify === "domain") ? "google" : who.identify
+      });
+    };
+
     /* 폴더 찾기 — 이름을 적으면 드라이브에서 찾아 고른다 */
     const box = $("#fdFind"), q = $("#fdQ"), list = $("#fdList");
     $("#fdPick").onclick = () => {
@@ -8060,6 +8157,7 @@ ${sheetLink.on ? `
     S.outMode = outMode;
     S.collect = collect;
     S.folder = folder;
+    if (sheetLink.on && window.__who) S.submitCfg = window.__who();
     $("#ovl").classList.remove("show");
     // 글꼴과 구성 요소는 항상 파일에 넣는다 — 받는 쪽이 인터넷 없이도 열 수 있도록
     await makeForm(S.srcName || title, S.pattern, outMode, true, "내보내기", true);
