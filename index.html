@@ -2043,6 +2043,8 @@ body.start #side { display: none !important; }
   border-bottom: 1px solid transparent;
 }
 #crMark a.cr-own { color: var(--text-faint); }
+#crMark a.cr-tip { font-weight: 600; color: var(--text); }
+#crMark a.cr-tip:hover { color: var(--accent); }
 #crMark a:hover { color: var(--accent); border-bottom-color: currentColor; }
 
 /* ---------- 모달 ---------- */
@@ -2379,8 +2381,8 @@ body:not(.booting) #boot { opacity: 0; pointer-events: none; }
 <div id="crMark">
   <a class="cr-own" href="https://dinosinfolee.github.io/chaeum/CopyrightTerms.html"
      target="_blank" rel="noopener" data-tip="저작권 및 이용 조건">&copy; 2026 Sani. All rights reserved.</a>
-  <a href="https://docs.google.com/spreadsheets/d/1HMmuDvPKjrnOq5RR3R7psbJwzHfH94MB7lEPHpDN-_U/copy"
-     target="_blank" rel="noopener">응답 수집용 시트 사본 만들기</a>
+  <a class="cr-tip" href="https://docs.google.com/spreadsheets/d/1HMmuDvPKjrnOq5RR3R7psbJwzHfH94MB7lEPHpDN-_U/copy"
+     target="_blank" rel="noopener">💡 구글 드라이브로 일괄 수집하려면?</a>
 </div>
 
 <div id="busy"><div class="spin"></div><div id="busyTxt"></div></div>
