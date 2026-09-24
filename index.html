@@ -878,8 +878,12 @@ body.preview-on #floatDock { display: none !important; }
   cursor: text;
 }
 body:not(.start) #fileName:hover { background: var(--bg-hover); border-color: var(--border-soft); color: var(--text); }
+.name-ruler {
+  position: absolute; left: -9999px; top: -9999px;
+  visibility: hidden; white-space: pre;
+}
 #nameEdit {
-  height: 26px; padding: 0 7px; max-width: 34vw;
+  height: 26px; padding: 0 7px; min-width: 180px; max-width: 46vw;
   border: 1px solid var(--accent); border-radius: 6px;
   background: #fff; color: var(--text);
   font-family: inherit; font-size: 13px; outline: none;
@@ -8110,7 +8114,10 @@ async function makeForm(title, pattern, outMode, offline, what, connect) {
     const name = FORM_TAG + title.replace(/[\\/:*?"<>|]/g, "_") + ".html";
 
     // 시트에서 열었으면 담당자의 드라이브에 담는다
-    if (sheetLink.on && window.opener) {
+    if (sheetLink.from && !sheetLink.on) {
+      toast("시트 창이 닫혀 있어 이 컴퓨터에 저장합니다 · 시트에서 다시 열어 주십시오", "warn", 6000);
+    }
+    if (sheetLink.on) {
       busy(true, "내 구글 드라이브에 저장 중…");
       const url = await driveSave(html, name, title);
       busy(false);
@@ -8191,9 +8198,23 @@ $("#fileName").onclick = () => {
   inp.value = S.srcName || "";
   span.hidden = true;
   span.after(inp);
+
+  /* 글에 맞추어 너비를 늘린다 — 창이 좁으면 그 안에서 멈춘다 */
+  const ruler = document.createElement("span");
+  ruler.className = "name-ruler";
+  document.body.appendChild(ruler);
+  const fit = () => {
+    ruler.style.font = getComputedStyle(inp).font;
+    ruler.textContent = inp.value || "";
+    inp.style.width = Math.max(180, ruler.offsetWidth + 24) + "px";
+  };
+  fit();
+  inp.oninput = fit;
+
   inp.focus();
   inp.select();
   const done = ok => {
+    ruler.remove();
     if (ok) {
       const v = inp.value.trim();
       if (v) S.srcName = v;
@@ -8332,7 +8353,18 @@ if (window.ResizeObserver) new ResizeObserver(() => placeDock(panels)).observe($
    [이 시트에 연결] 이 나타난다. 그냥 파일로 열면 지금까지와 똑같이 동작한다.
    주고받는 것은 자료뿐이며, 시트 권한은 부가기능 쪽에만 있다.
    ============================================================ */
-const sheetLink = { on: /(^|[#&])connect=sheet\b/.test(location.hash) && !!window.opener };
+const sheetLink = {
+  from: /(^|[#&])connect=sheet\b/.test(location.hash),   // 시트에서 열었는가
+  get on() { return this.from && !!window.opener && !window.opener.closed; }
+};
+/* 시트에서 열었으면 저장이 어디로 가는지 미리 알린다 */
+(function () {
+  if (!sheetLink.from) return;
+  const b = document.getElementById("btnSave");
+  if (b) b.dataset.tip = "저장 — 내 구글 드라이브에 (Ctrl S)";
+  const m = document.getElementById("btnMake");
+  if (m) m.dataset.tip = "배포 — 시트에 열을 만들고 드라이브에 담습니다";
+})();
 
 /* 개체 목록을 시트로 보내고, 제출 주소와 항목 번호를 받아 온다.
    내보내기 직전에 한 번만 한다 — 그래야 설문지 항목과 개체이 어긋나지 않는다. */
