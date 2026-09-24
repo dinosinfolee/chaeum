@@ -1039,14 +1039,8 @@ body:not(.start) #fileName:hover { background: var(--bg-hover); border-color: va
 }
 .ck-line.bare { border: 0; background: transparent; padding: 0; }
 .ck-line.ck-sm { flex: none; width: 92px; height: 34px; }
-/* 쪽번호와 딸린 설정을 한 틀에 담는다 */
-.ck-box {
-  padding: 4px 12px 6px;
-  border: 1px solid var(--border); border-radius: var(--radius); background: #fff;
-}
-.ck-box .sw-line.bare { margin: 0; padding: 6px 0 4px; }
-.ck-box .sw-line.bare[hidden] { display: none; }
-.ck-box .ck-sub .sw-tx { font-weight: 500; color: var(--text-muted); }
+.ck-line[hidden] { display: none; }
+.ck-sub { margin-left: 4px; font-size: 11.5px; font-weight: 500; color: var(--text-faint); }
 .pp-foot {
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   margin: 2px 0 4px;
@@ -3611,12 +3605,9 @@ function docSetPop() {
 
     <div class="field-row" style="margin-top:16px">
       <label class="field-label lb-big">표시할 항목</label>
-      <div class="ck-box">
-        <label class="ck-line bare" id="ckNo"><span class="ck"></span><span class="ck-tx">쪽번호</span></label>
-        <label class="sw-line bare ck-sub" id="swTot">
-          <span class="sw-tx">전체 쪽수 함께 표시<span class="sw-sub">1 / 3 처럼 적습니다</span></span>
-          <span class="sw"></span>
-        </label>
+      <div class="fd-row">
+        <label class="ck-line bare ck-sm" id="ckNo"><span class="ck"></span><span class="ck-tx">쪽번호</span></label>
+        <label class="ck-line bare" id="ckTot"><span class="ck"></span><span class="ck-tx">전체 쪽수 함께 <span class="ck-sub">1 / 3</span></span></label>
       </div>
 
       <div class="fd-row" style="margin-top:9px">
@@ -3758,11 +3749,11 @@ function docSetPop() {
   const paint = () => {
     $("#swGuide").classList.toggle("on", guide);
     $(".sw", $("#swClone")).classList.toggle("on", clone);
-    $(".sw", $("#swTot")).classList.toggle("on", no.total);
+    $("#ckTot").classList.toggle("on", no.total);
     $("#ckNo").classList.toggle("on", marks.no.on);
     $("#ckHd").classList.toggle("on", marks.hd.on);
     $("#ckFt").classList.toggle("on", marks.ft.on);
-    $("#swTot").hidden = !marks.no.on;
+    $("#ckTot").hidden = !marks.no.on;
     $("#hdTx").disabled = !marks.hd.on;
     $("#ftTx").disabled = !marks.ft.on;
     paintEdge();
@@ -3775,7 +3766,7 @@ function docSetPop() {
   ["t", "b", "l", "r"].forEach(k => { $("#mg" + k).oninput = () => { paintEdge(); place(); }; });
   $("#swGuide").onclick = e => { e.preventDefault(); guide = !guide; paint(); };
   $("#swClone").onclick = e => { e.preventDefault(); clone = !clone; paint(); };
-  $("#swTot").onclick   = e => { e.preventDefault(); no.total = !no.total; paint(); };
+  $("#ckTot").onclick   = e => { e.preventDefault(); no.total = !no.total; paint(); };
   const flip = (key, after) => e => {
     e.preventDefault();
     marks[key].on = !marks[key].on;
