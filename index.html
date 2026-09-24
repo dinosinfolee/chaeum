@@ -8065,11 +8065,13 @@ function driveExists(name, docName) {
 }
 
 /* 이미 있으면 어떻게 할지 고르게 한다 */
-function askOverwrite(name) {
+function askOverwrite(name, share) {
   return new Promise(resolve => {
     dialog("같은 이름의 파일이 있습니다",
       "<b>" + escapeHtml(name) + "</b> 이(가) 이미 저장되어 있습니다.<br>" +
-      "덮어쓰면 그 파일의 내용만 바뀌고 공유 주소는 그대로 남습니다.",
+      (share
+        ? "덮어쓰면 이미 나누어 준 주소는 그대로 두고 내용만 새것으로 바뀝니다."
+        : "덮어쓰면 그 파일의 내용이 지금 것으로 바뀝니다."),
       [{ label: "취소", act: () => resolve(null) },
        { label: "새 이름으로", act: () => resolve("copy") },
        { label: "덮어쓰기", primary: true, act: () => resolve("overwrite") }]);
@@ -8169,7 +8171,7 @@ async function makeForm(title, pattern, outMode, offline, what, connect) {
       busy(false);
       driveMode = "copy";
       if (dup) {
-        const pick = await askOverwrite(name);
+        const pick = await askOverwrite(name, share);
         if (!pick) return;                        // 취소
         driveMode = pick;
       }
