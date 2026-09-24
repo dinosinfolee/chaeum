@@ -7856,7 +7856,7 @@ $("#btnMake").onclick = () => {
     .map(f => '<span class="token" data-t="' + escapeHtml(f.name) + '">{' + escapeHtml(f.name) + "}</span>").join("");
 
   dialog("내보내기 설정", `
-    <div class="field-row">
+    <div class="field-row" id="rowPat">
       <label class="field-label">회신 받을 파일명 규칙</label>
       <input class="input" id="mPattern" placeholder="[제출] {문서명}_{성명}">
       <div class="hint" id="patEx"></div>
@@ -7986,6 +7986,9 @@ ${sheetLink.on ? `
     el.innerHTML = lines.join("<br>");
     const row = $("#rowFolder");
     if (row) row.hidden = !(collect.html || collect.pdf);
+    // 파일을 회신받지 않으면 파일명 규칙도 정할 까닭이 없다
+    const pat = $("#rowPat");
+    if (pat) pat.hidden = sheetLink.on && !(collect.html || collect.pdf);
   };
   const fdShow = () => {
     const el = $("#fdNow");
