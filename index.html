@@ -2043,7 +2043,11 @@ body.start #side { display: none !important; }
   border-bottom: 1px solid transparent;
 }
 #crMark a.cr-own { color: var(--text-faint); }
-#crMark a.cr-tip { font-weight: 600; color: var(--text); }
+#crMark a.cr-tip { font-weight: 500; color: var(--text-muted); }
+#crMark a.cr-tip .emo { font-size: 10.5px; }
+/* 미리보기에서는 작성 화면의 안내와 겹치므로 오른쪽으로 물린다 */
+body.preview-on #crMark { left: auto; right: 15px; align-items: flex-end; text-align: right; }
+body.preview-on #crMark a { align-self: flex-end; }
 #crMark a.cr-tip:hover { color: var(--accent); }
 #crMark a:hover { color: var(--accent); border-bottom-color: currentColor; }
 
@@ -2382,7 +2386,7 @@ body:not(.booting) #boot { opacity: 0; pointer-events: none; }
   <a class="cr-own" href="https://dinosinfolee.github.io/chaeum/CopyrightTerms.html"
      target="_blank" rel="noopener" data-tip="저작권 및 이용 조건">&copy; 2026 Sani. All rights reserved.</a>
   <a class="cr-tip" href="https://docs.google.com/spreadsheets/d/1HMmuDvPKjrnOq5RR3R7psbJwzHfH94MB7lEPHpDN-_U/copy"
-     target="_blank" rel="noopener">💡 구글 드라이브로 일괄 수집하려면?</a>
+     target="_blank" rel="noopener"><span class="emo">💡</span> 구글 드라이브로 일괄 수집하려면?</a>
 </div>
 
 <div id="busy"><div class="spin"></div><div id="busyTxt"></div></div>
