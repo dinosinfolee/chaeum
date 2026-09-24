@@ -2993,6 +2993,11 @@ function dialog(title, bodyHtml, buttons) {
   });
   $("#ovl").classList.add("show");
 }
+
+/* 쪽지 바깥을 누르면 닫힌다 */
+$("#ovl").addEventListener("mousedown", e => {
+  if (e.target.id === "ovl") $("#ovl").classList.remove("show");
+});
 function bytesToB64(bytes) {
   let bin = "";
   const CH = 0x8000;
@@ -8174,6 +8179,14 @@ ${sheetLink.on ? `
         <button type="button" data-v="pdf">PDF</button>
       </div>
       <div class="hint" id="colHint"></div>
+      <div class="field-row" id="nowShare" hidden style="margin-top:9px">
+        <label class="field-label">현재 공유 중인 URL</label>
+        <div class="fd-row">
+          <input class="input" id="nowUrl" readonly>
+          <button class="btn btn-sm" id="nowCopy" type="button">복사</button>
+        </div>
+        <div class="hint">다시 내보내면 이 주소는 그대로 두고 내용만 새로 채워집니다.</div>
+      </div>
       <div class="help-box" id="colHelpBox" hidden>
         <div class="hb-row"><b>스프레드시트</b> 항목별 값이 시트에 한 행으로 기록됩니다. 로그인 없이도 제출할 수 있으나, 표는 한 열에 JSON 형식으로 저장되므로 행이 수백 개에 이르면 일부가 기록되지 않을 수 있습니다.</div>
         <div class="hb-row"><b>HTML</b> 작성 내용이 담긴 양식 파일을 그대로 수집합니다. 담당자 입력 항목을 이어서 작성할 수 있습니다.</div>
@@ -8294,7 +8307,7 @@ ${sheetLink.on ? `
   $("#mPattern").addEventListener("input", patEx);
   patEx();
 
-  /* 수합 방식 — 처음에는 아무것도 고르지 않은 채로 둔다 */
+  /* 수합 방식 — 지난번에 정한 것이 있으면 그대로, 없으면 빈 채로 */
   let collect = sheetLink.on ? { sheet: false, html: false, pdf: false } : fixCollect(S.collect);
   let folder = Object.assign({ id: "", name: "" }, S.folder || {});
   const seg = $("#mCollect");
@@ -8326,6 +8339,14 @@ ${sheetLink.on ? `
     if (whoRef.paint) whoRef.paint();
   };
   const fdShow = () => {};
+  const nowCopy = $("#nowCopy");
+  if (nowCopy) {
+    nowCopy.onclick = () => {
+      const el = $("#nowUrl");
+      el.select();
+      try { navigator.clipboard.writeText(el.value); toast("URL을 복사하였습니다", "ok", 2200); } catch (e) {}
+    };
+  }
   const helpBtn = $("#colHelp");
   if (helpBtn) {
     helpBtn.onclick = () => {
@@ -8350,6 +8371,32 @@ ${sheetLink.on ? `
     syncOut();
     colHint();
     fdShow();
+
+    /* 지난번 설정과 지금 공유 중인 주소를 시트에서 받아 온다 */
+    driveAsk("exportState", "exportStateDone").then(r => {
+      const st = r && r.state;
+      if (!st) return;
+      if (st.collect) {
+        collect = fixCollect(st.collect);
+        paintSeg();
+        syncOut();
+        colHint();
+        patEx();
+      }
+      if (st.folder && st.folder.id) folder = st.folder;
+      if (st.submitCfg && st.submitCfg.identify) {
+        who = Object.assign(who, st.submitCfg);
+        if (whoRef.paint) whoRef.paint();
+        if (typeof duePaint === "function") duePaint();
+      }
+      if (st.shareUrl) {
+        const box = $("#nowShare");
+        if (box) {
+          box.hidden = false;
+          $("#nowUrl").value = st.shareUrl;
+        }
+      }
+    });
 
     /* 제출 자격 · 마감 · 횟수 */
     let who = Object.assign({ identify: "domain", closesAt: "", onePerUser: true }, S.submitCfg || {});
@@ -8663,7 +8710,8 @@ function driveDone(url, name, job, share, live) {
   const go = { label: "저장 위치로 이동", act: () => window.open(url, "_blank", "noopener") };
 
   if (!share) {
-    dialog(job + " 완료", where, [go, { label: "닫기", primary: true }]);
+    dialog(job + " 완료", where,
+      [Object.assign({ keepOpen: true }, go), { label: "닫기", primary: true }]);
     return;
   }
 
@@ -8675,10 +8723,10 @@ function driveDone(url, name, job, share, live) {
         ? "작성자는 이 URL을 열어 <b>그 자리에서 작성하고 제출</b>합니다. 내려받을 필요가 없습니다."
         : "위 URL을 통해 양식 파일을 내려받아 작성할 수 있습니다."}</div>
     </div>`,
-    [{ label: "URL 복사", act: () => {
+    [{ label: "URL 복사", keepOpen: true, act: () => {
         try { navigator.clipboard.writeText(url); toast("URL을 복사하였습니다", "ok", 2200); } catch (e) {}
       } },
-     go,
+     Object.assign({ keepOpen: true }, go),
      { label: "닫기", primary: true }]);
   setTimeout(() => { const i = $("#dvUrl"); if (i) { i.focus(); i.select(); } }, 60);
 }
