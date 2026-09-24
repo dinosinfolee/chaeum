@@ -990,11 +990,12 @@ body:not(.start) #fileName:hover { background: var(--bg-hover); border-color: va
   color: var(--text); font-weight: 500; letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums; white-space: nowrap;
 }
-/* 종이 도해 — 한글의 쪽 설정처럼 자리를 눈으로 고른다 */
+/* 종이 도해 — 여백을 눈으로 가늠한다 */
 .pp-wrap {
   display: grid; gap: 7px; align-items: center; justify-items: center;
   grid-template-columns: 84px 132px 84px;
   grid-template-rows: auto 186px auto;
+  margin: 4px auto 10px; width: max-content;
 }
 .pp-cell { display: flex; }
 .pp-t { grid-area: 1 / 2; }
@@ -1012,24 +1013,13 @@ body:not(.start) #fileName:hover { background: var(--bg-hover); border-color: va
 .pp-edge {
   position: absolute; border: 1px dashed var(--accent-border); pointer-events: none;
 }
-.pp-spot {
-  position: absolute; width: 26px; height: 16px; padding: 0;
-  display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--border); border-radius: 4px;
-  background: #fff; cursor: pointer;
-  transition: border-color 110ms ease, background 110ms ease;
-}
-.pp-spot i { width: 12px; height: 2px; border-radius: 1px; background: var(--border-strong); }
-.pp-spot:hover { border-color: var(--accent-border); background: var(--accent-bg); }
-.pp-spot.on { border-color: var(--accent); background: var(--accent); }
-.pp-spot.on i { background: #fff; }
-.pp-tl, .pp-tc, .pp-tr { top: 8px; }
-.pp-bl, .pp-bc, .pp-br { bottom: 8px; }
-.pp-tl, .pp-bl { left: 8px; }
-.pp-tr, .pp-br { right: 8px; }
-.pp-tc, .pp-bc { left: 50%; transform: translateX(-50%); }
-.seg.seg-sm { flex: none; width: 108px; }
-.seg.seg-sm button { height: 32px; font-size: 11.5px; }
+.seg.seg-sm { flex: none; width: 100px; }
+.fd-row .seg { flex: none; width: 168px; }
+.fd-row .seg.seg-sm { width: 100px; }
+.fd-row .seg button, .fd-row .input { height: 34px; }
+.seg button { white-space: nowrap; }
+.hf-cap { flex: none; width: 44px; font-size: 12px; font-weight: 600; color: var(--text-muted); }
+.hf-tx { flex: 1; min-width: 0; }
 /* 유형 자리 — 안에 무엇이 오든 너비가 같다 */
 .tt-lead {
   display: inline-flex; align-items: center; gap: 4px;
@@ -2199,8 +2189,8 @@ body.preview-on #crMark { display: none; }
 /* 수식 적는 곳 — 열 이름은 이름표로 앉는다 */
 .xfield {
   min-height: 40px; height: auto; padding: 8px 10px;
-  display: flex; flex-wrap: wrap; align-items: center; gap: 3px 0;
-  line-height: 22px; white-space: pre-wrap; word-break: break-all;
+  display: block; line-height: 24px;
+  white-space: pre-wrap; word-break: break-all;
   cursor: text; overflow: hidden;
 }
 .xfield:empty::before {
@@ -2208,8 +2198,8 @@ body.preview-on #crMark { display: none; }
   color: var(--text-faint); font-family: var(--font); font-size: 12.5px;
 }
 .xchip {
-  display: inline-flex; align-items: center;
-  height: 22px; padding: 0 8px; margin: 0 2px;
+  display: inline-flex; align-items: center; vertical-align: -5px;
+  height: 22px; padding: 0 8px; margin: 0 1px;
   border: 1px solid var(--accent-border); border-radius: 6px;
   background: var(--accent-bg); color: var(--accent-hover);
   font-family: var(--font); font-size: 12px; font-weight: 600;
@@ -2528,6 +2518,8 @@ const TYPES = [
 const TYPE_LABEL = Object.fromEntries(TYPES.map(t => [t.v, t.label]));
 /* 가이드 문구를 두는 유형 — 글꼴 탭에 「가이드 문구」가 함께 나온다 */
 const GUIDED = ["text", "number", "multiline", "link"];
+/* 작성자가 손댈 수 없는 유형 — 고정 문구와 같은 낯으로 두고 필수도 지정하지 않는다 */
+const NO_INPUT = ["fixed", "expr", "calc"];
 const svgWrap = inner => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + inner + "</svg>";
 
 /* 글꼴 — 글꼴 파일을 화면과 PDF 양쪽에 실어 똑같이 보이게 한다 */
@@ -2914,7 +2906,22 @@ function chipField(fld, onChange) {
     lastRange = rr.cloneRange();
     if (onChange) onChange();
   });
-  return { set, get, insert: name => drop(chipEl(name)) };
+  /* 빈 곳을 누르면 글 끝으로 커서를 보낸다 */
+  fld.addEventListener("mousedown", ev => {
+    if (ev.target !== fld) return;
+    const r = document.createRange();
+    r.selectNodeContents(fld);
+    r.collapse(false);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(r);
+    lastRange = r.cloneRange();
+  });
+  return {
+    set: set,
+    get: get,
+    insert: name => { drop(chipEl(name)); drop(document.createTextNode(" ")); }
+  };
 }
 
 /* ============================================================
@@ -3486,45 +3493,57 @@ function docSetPop() {
     '<input class="num-input" id="mg' + k + '" type="number" min="0" max="80" step="1" value="' +
     ptToMm(m[k]) + '"><span class="num-unit">mm</span></span>';
 
-  const SPOTS = ["tl", "tc", "tr", "bl", "bc", "br"];
-  const ALIGN = [{ v: "l", label: "좌" }, { v: "c", label: "중" }, { v: "r", label: "우" }];
-  const alSeg = (id, cur) => '<div class="seg seg-sm" id="' + id + '">' +
-    ALIGN.map(x => '<button type="button" data-v="' + x.v + '"' +
+  /* 자리를 고르는 단추는 세 곳 모두 같은 모양으로 둔다 */
+  const HH = [{ v: "l", label: "왼쪽" }, { v: "c", label: "가운데" }, { v: "r", label: "오른쪽" }];
+  const VV = [{ v: "t", label: "위" }, { v: "b", label: "아래" }];
+  const seg = (id, list, cur, cls) =>
+    '<div class="seg' + (cls ? " " + cls : "") + '" id="' + id + '">' +
+    list.map(x => '<button type="button" data-v="' + x.v + '"' +
       (x.v === cur ? ' class="on"' : "") + ">" + x.label + "</button>").join("") + "</div>";
 
   dialog("문서 설정", `
-    <div class="pp-wrap">
-      <div class="pp-cell pp-t">${mmBox("t")}</div>
-      <div class="pp-cell pp-l">${mmBox("l")}</div>
-      <div class="pp-paper" id="ppPaper">
-        <div class="pp-edge" id="ppEdge"></div>
-        ${SPOTS.map(v => '<button type="button" class="pp-spot pp-' + v +
-          '" data-v="' + v + '" title="쪽번호 자리"><i></i></button>').join("")}
+    <div class="field-row">
+      <label class="field-label lb-big">페이지 여백</label>
+      <div class="pp-wrap">
+        <div class="pp-cell pp-t">${mmBox("t")}</div>
+        <div class="pp-cell pp-l">${mmBox("l")}</div>
+        <div class="pp-paper"><div class="pp-edge" id="ppEdge"></div></div>
+        <div class="pp-cell pp-r">${mmBox("r")}</div>
+        <div class="pp-cell pp-b">${mmBox("b")}</div>
       </div>
-      <div class="pp-cell pp-r">${mmBox("r")}</div>
-      <div class="pp-cell pp-b">${mmBox("b")}</div>
+      <label class="sw-line bare" id="swGuide">
+        <span class="sw-tx">여백 안내선 표시<span class="sw-sub">편집기에서만 보이며 인쇄물에는 나오지 않습니다</span></span>
+        <span class="sw"></span>
+      </label>
     </div>
 
-    <div class="field-row" style="margin-top:14px">
-      <label class="field-label">머리글</label>
-      <div class="fd-row">${alSeg("hdAl", hd.align)}
-        <input class="input" id="hdTx" maxlength="200" value="${escapeHtml(hd.text)}"
-               placeholder="비워 두면 넣지 않습니다"></div>
-    </div>
-    <div class="field-row" style="margin-top:9px">
-      <label class="field-label">꼬리글</label>
-      <div class="fd-row">${alSeg("ftAl", ft.align)}
-        <input class="input" id="ftTx" maxlength="200" value="${escapeHtml(ft.text)}"
-               placeholder="비워 두면 넣지 않습니다"></div>
+    <div class="field-row" style="margin-top:18px">
+      <label class="field-label lb-big">쪽번호</label>
+      <label class="sw-line bare" id="swNo">
+        <span class="sw-tx">쪽번호 표시</span><span class="sw"></span>
+      </label>
+      <div id="noRow" style="margin-top:8px">
+        <div class="fd-row">${seg("noV", VV, no.pos[0], "seg-sm")}${seg("noH", HH, no.pos[1])}</div>
+        <label class="sw-line bare" id="swTot" style="margin-top:8px">
+          <span class="sw-tx">전체 쪽수 함께 표시<span class="sw-sub">1 / 3 처럼 적습니다</span></span>
+          <span class="sw"></span>
+        </label>
+      </div>
     </div>
 
-    <label class="sw-line bare" id="swGuide" style="margin-top:14px">
-      <span class="sw-tx">여백 안내선 표시</span><span class="sw"></span>
-    </label>
-    <label class="sw-line bare" id="swTot">
-      <span class="sw-tx">쪽번호에 전체 쪽수 함께<span class="sw-sub">1 / 3 처럼</span></span>
-      <span class="sw"></span>
-    </label>
+    <div class="field-row" style="margin-top:18px">
+      <label class="field-label lb-big">머리글 · 꼬리글</label>
+      <div class="fd-row">
+        <span class="hf-cap">머리글</span>
+        ${seg("hdAl", HH, hd.text ? hd.align : "", "seg-sm")}
+        <input class="input hf-tx" id="hdTx" maxlength="200" value="${escapeHtml(hd.text)}">
+      </div>
+      <div class="fd-row" style="margin-top:7px">
+        <span class="hf-cap">꼬리글</span>
+        ${seg("ftAl", HH, ft.text ? ft.align : "", "seg-sm")}
+        <input class="input hf-tx" id="ftTx" maxlength="200" value="${escapeHtml(ft.text)}">
+      </div>
+    </div>
   `, [{ label: "취소" }, { label: "적용", primary: true, keepOpen: true }]);
 
   /* 종이 도해에 여백을 그대로 비친다 (A4 기준) */
@@ -3538,32 +3557,48 @@ function docSetPop() {
   };
   const paint = () => {
     $(".sw", $("#swGuide")).classList.toggle("on", guide);
+    $(".sw", $("#swNo")).classList.toggle("on", no.on);
     $(".sw", $("#swTot")).classList.toggle("on", no.total);
-    $("#swTot").style.opacity = no.on ? "" : ".45";
-    $$("#ppPaper .pp-spot").forEach(b =>
-      b.classList.toggle("on", no.on && b.dataset.v === no.pos));
+    $("#noRow").hidden = !no.on;
     paintEdge();
   };
   paint();
 
-  $$("#ppPaper .pp-spot").forEach(b => {
-    b.onclick = () => {
-      if (no.on && no.pos === b.dataset.v) { no.on = false; }   // 다시 누르면 끈다
-      else { no.on = true; no.pos = b.dataset.v; }
-      paint();
-    };
-  });
   ["t", "b", "l", "r"].forEach(k => { $("#mg" + k).oninput = paintEdge; });
   $("#swGuide").onclick = e => { e.preventDefault(); guide = !guide; paint(); };
-  $("#swTot").onclick = e => { e.preventDefault(); if (!no.on) return; no.total = !no.total; paint(); };
-  [["#hdAl", hd], ["#ftAl", ft]].forEach(([sel, o]) => {
-    $$(sel + " button").forEach(b => {
-      b.onclick = () => {
-        o.align = b.dataset.v;
-        $$(sel + " button").forEach(x => x.classList.toggle("on", x === b));
+  $("#swNo").onclick    = e => { e.preventDefault(); no.on = !no.on; paint(); };
+  $("#swTot").onclick   = e => { e.preventDefault(); no.total = !no.total; paint(); };
+
+  /* 세그 — 쪽번호는 하나를 반드시 고르고, 머리글·꼬리글은 풀 수 있다 */
+  const bindSeg = (sel, get, set, clearable) => {
+    $$(sel + " button").forEach(btn => {
+      btn.onclick = () => {
+        const v = (clearable && get() === btn.dataset.v) ? "" : btn.dataset.v;
+        set(v);
+        $$(sel + " button").forEach(x => x.classList.toggle("on", x.dataset.v === v));
       };
     });
-  });
+  };
+  bindSeg("#noV", () => no.pos[0], v => { if (v) no.pos = v + no.pos[1]; }, false);
+  bindSeg("#noH", () => no.pos[1], v => { if (v) no.pos = no.pos[0] + v; }, false);
+  bindSeg("#hdAl", () => hd.align, v => { hd.align = v; }, true);
+  bindSeg("#ftAl", () => ft.align, v => { ft.align = v; }, true);
+  if (!hd.text) hd.align = "";
+  if (!ft.text) ft.align = "";
+
+  /* 글을 적으면 자리를 고르지 않았더라도 가운데로 둔다 */
+  $("#hdTx").oninput = () => {
+    if ($("#hdTx").value.trim() && !hd.align) {
+      hd.align = "c";
+      $$("#hdAl button").forEach(x => x.classList.toggle("on", x.dataset.v === "c"));
+    }
+  };
+  $("#ftTx").oninput = () => {
+    if ($("#ftTx").value.trim() && !ft.align) {
+      ft.align = "c";
+      $$("#ftAl button").forEach(x => x.classList.toggle("on", x.dataset.v === "c"));
+    }
+  };
 
   $$("#dlgBtns .btn")[1].onclick = () => {
     S.margin = fixMargin({
@@ -3572,8 +3607,9 @@ function docSetPop() {
     });
     S.guide = guide;
     S.pageNo = fixPageNo(no);
-    S.header = fixHF({ text: $("#hdTx").value, align: hd.align });
-    S.footer = fixHF({ text: $("#ftTx").value, align: ft.align });
+    /* 자리를 고르지 않았으면 넣지 않는다 */
+    S.header = fixHF({ text: hd.align ? $("#hdTx").value : "", align: hd.align || "c" });
+    S.footer = fixHF({ text: ft.align ? $("#ftTx").value : "", align: ft.align || "c" });
     $("#ovl").classList.remove("show");
     renderPages();
     toast("문서 설정을 적용하였습니다", "ok", 1800);
@@ -3907,6 +3943,11 @@ function setFieldType(f, type) {
   }
   if (isAutoName(f.name)) f.name = autoName(type, f.id);
   if (type === "number" && (f.align || "center") === "center") f.align = "right";
+  if (NO_INPUT.indexOf(type) >= 0) {       // 작성자가 손대지 않는 유형
+    f.required = false;
+    f.admin = false;
+    f.guide = "";
+  }
   f.type = type;
   renderBoxes(); renderList(); renderProps();
   if (type === "table") tableNotice();
@@ -3993,7 +4034,7 @@ function renderBoxes() {
     const b = document.createElement("div");
     b.className = "box" +
       (S.multi.includes(f.id) ? " sel" : "") +
-      (f.admin ? " admin" : (f.type === "fixed" ? " locked" : "")) +
+      (f.admin ? " admin" : (NO_INPUT.indexOf(f.type) >= 0 ? " locked" : "")) +
       (f.type === "check" ? " check" : "") +
       (f.type === "calc" ? " calc" : "");
     b.style.left   = (f.x * 100) + "%";
@@ -4181,6 +4222,10 @@ function editInline(f, box) {
   }
   if (f.type === "check" || f.type === "calc" || f.type === "sign") {
     toast("이 유형은 문서에서 고칠 내용이 없습니다", "warn", 2200);
+    return;
+  }
+  if (f.type === "expr") {                 // 수식은 수식 창에서 고친다
+    fieldExprDialog(f);
     return;
   }
   if (box.querySelector(".box-edit")) return;
@@ -5644,7 +5689,7 @@ function fieldTools(f, box, pg) {
 
     /* 여기서부터는 이 개체에만 있는 것 */
     g = "";
-    if (!isCalc && !isFixed) {
+    if (NO_INPUT.indexOf(f.type) < 0) {
       g += btn("admin", f.admin ? "담당자가 입력" : "작성자가 입력",
                f.admin
                  ? '<path d="M12 3l8 3.6v5.2c0 4.4-3.2 8.3-8 9.2-4.8-.9-8-4.8-8-9.2V6.6z"/><path d="M9 12l2 2 4-4"/>'
@@ -7170,7 +7215,20 @@ function exprEditor(o) {
     el.onclick = () => {
       if (el.dataset.o) return put(" " + el.dataset.o + " ");
       drop(chipEl(el.dataset.t));
+      put(" ");                                        // 이름표 뒤에 빈칸을 두어 커서가 설 자리를 만든다
     };
+  });
+
+  /* 빈 곳을 누르면 글 끝으로 */
+  fld.addEventListener("mousedown", ev => {
+    if (ev.target !== fld) return;
+    const r = document.createRange();
+    r.selectNodeContents(fld);
+    r.collapse(false);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(r);
+    lastRange = r.cloneRange();
   });
 
   $$("#dlgBtns .btn")[1].onclick = () => {
@@ -8434,11 +8492,11 @@ function renderProps() {
     v => { f.align = v; renderBoxes(); });
   bindFontGroup([f], GUIDED.indexOf(f.type) >= 0);
 
-  $("#rowWho").style.display    = (isCalc || isFixed) ? "none" : "";
+  $("#rowWho").style.display    = NO_INPUT.indexOf(f.type) >= 0 ? "none" : "";
   $("#rowReq").style.display    = f.admin ? "none" : "";
   $("#rowText").style.display   = isFixed ? "" : "none";
   $("#rowFormat").style.display = isDT ? "" : "none";
-  $("#rowGuide").style.display  = (isCheck || isCalc || isSign || isFixed || isDT || isImage || isTable) ? "none" : "";
+  $("#rowGuide").style.display  = GUIDED.indexOf(f.type) >= 0 ? "" : "none";
   $("#rowTable").style.display  = isTable ? "" : "none";
   $("#rowComma").style.display  = (f.type === "number") ? "" : "none";
   if (f.type === "number") {
@@ -8460,7 +8518,7 @@ function renderProps() {
   $("#rowAlign").style.display  = (isCheck || isSign || isImage || isTable) ? "none" : "";
   if (isTable) renderTableProps(f);
   $("#rowFontFace").style.display = (isCheck || isSign || isImage) ? "none" : "";
-  $("#rowReq").style.display    = (isCalc || isFixed) ? "none" : "";
+  $("#rowReq").style.display    = (NO_INPUT.indexOf(f.type) >= 0 || f.admin) ? "none" : "";
   setGuideHelp(f);
 
   if (isDT) {
