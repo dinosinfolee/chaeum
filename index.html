@@ -3571,7 +3571,6 @@ function docSetPop() {
   const hd = fixHF(S.header);
   const ft = fixHF(S.footer);
   let guide = S.guide !== false;
-  let clone = S.allowClone !== false;
 
   /* 종이 위에 놓이는 이름표 — 자리는 여섯 곳뿐이다 */
   const marks = {
@@ -3620,13 +3619,6 @@ function docSetPop() {
       </div>
     </div>
 
-    <div class="field-row" style="margin-top:16px">
-      <label class="field-label lb-big">작성자 수정 허용</label>
-      <label class="sw-line bare" id="swClone">
-        <span class="sw-tx">작성자가 페이지를 추가할 수 있도록 함<span class="sw-sub">복제 레이아웃으로 지정한 페이지를 골라 붙입니다</span></span>
-        <span class="sw"></span>
-      </label>
-    </div>
   `, [{ label: "취소" }, { label: "적용", primary: true, keepOpen: true }]);
 
   const paper = $("#ppPaper");
@@ -3748,7 +3740,6 @@ function docSetPop() {
 
   const paint = () => {
     $("#swGuide").classList.toggle("on", guide);
-    $(".sw", $("#swClone")).classList.toggle("on", clone);
     $("#ckTot").classList.toggle("on", no.total);
     $("#ckNo").classList.toggle("on", marks.no.on);
     $("#ckHd").classList.toggle("on", marks.hd.on);
@@ -3765,7 +3756,6 @@ function docSetPop() {
 
   ["t", "b", "l", "r"].forEach(k => { $("#mg" + k).oninput = () => { paintEdge(); place(); }; });
   $("#swGuide").onclick = e => { e.preventDefault(); guide = !guide; paint(); };
-  $("#swClone").onclick = e => { e.preventDefault(); clone = !clone; paint(); };
   $("#ckTot").onclick   = e => { e.preventDefault(); no.total = !no.total; paint(); };
   const flip = (key, after) => e => {
     e.preventDefault();
@@ -3784,7 +3774,6 @@ function docSetPop() {
       l: mmToPt($("#mgl").value), r: mmToPt($("#mgr").value)
     });
     S.guide = guide;
-    S.allowClone = clone;
     S.pageNo = fixPageNo({ on: marks.no.on, pos: marks.no.pos, total: no.total });
     S.header = fixHF({ on: marks.hd.on, text: $("#hdTx").value, align: marks.hd.pos[1] });
     S.footer = fixHF({ on: marks.ft.on, text: $("#ftTx").value, align: marks.ft.pos[1] });
