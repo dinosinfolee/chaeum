@@ -8037,7 +8037,9 @@ async function buildFormHtml(title, pattern, outMode, offline, submit) {
 
 /* 시트에서 연 편집기라면 양식을 담당자의 드라이브에 담는다.
    사이드바가 Chaeum/<문서명> 폴더에 넣고 공유 주소를 돌려준다. */
+let driveWhy = "";            // 저장하지 못한 까닭
 function driveSave(html, name, docName) {
+  driveWhy = "";
   return new Promise(resolve => {
     if (!sheetLink.on || !window.opener) { resolve(null); return; }
     let done = false;
@@ -8051,6 +8053,7 @@ function driveSave(html, name, docName) {
     const onMsg = e => {
       const d = e.data;
       if (!d || d.app !== "chaeum" || d.type !== "publishDone") return;
+      driveWhy = d.error || "";
       finish(d.url || null);
     };
     window.addEventListener("message", onMsg);
@@ -8064,7 +8067,7 @@ function driveSave(html, name, docName) {
 function driveDone(url, name, job) {
   dialog(job + "되었습니다", `
     <div class="field-row">
-      <label class="field-label">드라이브에 담긴 곳</label>
+      <label class="field-label">저장된 곳</label>
       <div class="hint">내 드라이브 › <b>Chaeum</b> › <b>${escapeHtml(S.srcName || "문서")}</b> › ${escapeHtml(name)}</div>
     </div>
     <div class="field-row">
@@ -8108,11 +8111,12 @@ async function makeForm(title, pattern, outMode, offline, what, connect) {
 
     // 시트에서 열었으면 담당자의 드라이브에 담는다
     if (sheetLink.on && window.opener) {
-      busy(true, "드라이브에 담는 중…");
+      busy(true, "내 구글 드라이브에 저장 중…");
       const url = await driveSave(html, name, title);
       busy(false);
       if (url) { driveDone(url, name, job); return; }
-      toast("드라이브에 담지 못하여 이 컴퓨터에 내려받습니다", "warn", 4200);
+      toast("구글 드라이브에 저장하지 못하여 이 컴퓨터에 내려받습니다" +
+            (driveWhy ? " · " + driveWhy : ""), "warn", 6000);
     }
 
     busy(false);
