@@ -1018,10 +1018,6 @@ body.start #btnName { display: none; }
 .pp-r { grid-area: 2 / 3; }
 .pp-b { grid-area: 3 / 2; }
 .pp-num { width: 84px; }
-/* 제출 마감 — 날짜와 시각을 가운데에 나란히 */
-.due-row { display: flex; justify-content: center; gap: 8px; margin-top: 9px; }
-.due-pick { flex: none; width: 168px; justify-content: center; }
-.due-pick .pk-label { flex: none; text-align: center; }
 .pp-num .num-input { text-align: right; min-width: 0; padding-right: 2px; }
 .pp-num .num-unit { padding: 0 6px 0 1px; font-size: 11px; }
 .pp-paper {
@@ -1221,6 +1217,10 @@ body.start #tbar { display: none !important; }
 .picker .pk-ico svg { width: 16px; height: 16px; }
 .picker .pk-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .picker .pk-caret { width: 14px; height: 14px; flex: none; color: var(--text-muted); }
+/* 제출 마감 — 날짜와 시각을 가운데에 나란히 */
+.due-row { display: flex; justify-content: center; gap: 8px; margin-top: 9px; }
+.due-pick { flex: none; width: 168px; justify-content: center; }
+.due-pick .pk-label { flex: none; text-align: center; }
 
 /* 숫자 입력 — 양쪽에 ± */
 .num-field {
@@ -9429,20 +9429,20 @@ ${sheetLink.on ? `
     </div>` : ""}
     <div id="stepRest"${sheetLink.on ? " hidden" : ""}>
 ${sheetLink.on ? `
-    <hr class="divider">
     <div class="field-row" id="rowFolder">
+      <hr class="divider">
       <label class="field-label lb-big">수합 파일 저장 위치</label>
       <div class="fd-now">내 드라이브 › <b>Chaeum</b> › <b>${escapeHtml(S.srcName || "문서")}</b></div>
     </div>` : ""}
-${sheetLink.on ? '<hr class="divider">' : ""}
     <div class="field-row" id="rowShare"${sheetLink.on ? "" : ' style="margin-top:16px"'}>
+      ${sheetLink.on ? '<hr class="divider">' : ""}
       <label class="field-label lb-big">배포할 양식 파일명</label>
       <input class="input" id="mShare" maxlength="80" value="${escapeHtml(S.shareName || FORM_TAG + title)}">
       <div class="hint" id="shareEx"></div>
     </div>
 
-    ${sheetLink.on ? '<hr class="divider">' : ""}
     <div class="field-row" id="rowPat">
+      ${sheetLink.on ? '<hr class="divider">' : ""}
       <label class="field-label lb-big">회신 받을 파일명 규칙</label>
       <div class="input xfield" id="mPattern" contenteditable="true" spellcheck="false"
            data-ph="아래 이름표를 눌러 넣고 사이에 글자를 적으십시오"></div>
@@ -9457,8 +9457,8 @@ ${sheetLink.on ? '<hr class="divider">' : ""}
         로그인 없이 제출하는 경우에는 제출번호로 대체됩니다.</div>
     </div>
 
-    <hr class="divider"${sheetLink.on ? " hidden" : ""}>
     <div class="field-row" id="rowOut"${sheetLink.on ? " hidden" : ""}>
+      <hr class="divider"${sheetLink.on ? " hidden" : ""}>
       <label class="field-label lb-big">회신 받을 형식</label>
       <button class="picker" id="mOut" type="button">
         <span class="pk-ico"></span><span class="pk-label"></span>
@@ -9467,8 +9467,8 @@ ${sheetLink.on ? '<hr class="divider">' : ""}
       <div class="hint" id="outHint"></div>
     </div>
 ${sheetLink.on ? `
-    <hr class="divider">
     <div class="field-row">
+      <hr class="divider">
       <label class="field-label lb-big">제출 자격</label>
       <div class="seg" id="mWho">
         <button type="button" data-v="domain">우리 조직 계정만</button>
