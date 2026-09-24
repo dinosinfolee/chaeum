@@ -952,6 +952,12 @@ body:not(.start) #fileName:hover { background: var(--bg-hover); border-color: va
 .new-type {
   flex: 1; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px;
 }
+/* 한 무리 — 줄이 바뀌어도 통째로 넘어간다 */
+.new-type .nt-set {
+  display: inline-flex; align-items: center; gap: 2px; flex: none;
+}
+/* 유형 단추는 워낙 많아 무리 안에서는 줄을 바꿀 수 있게 둔다 */
+.new-type .nt-set.nt-types { flex-wrap: wrap; justify-content: center; }
 /* 영역 머리말 — 기본 개체·글꼴·크기가 모두 같은 낯 */
 .new-type .nt-cap, .new-type .nt-cap2 {
   font-size: 11.5px; font-weight: 600; color: var(--text-muted);
@@ -4343,19 +4349,22 @@ function paintNewType() {
       ((k === "w" ? newW : k === "h" ? newH : newFS) || "자동") + "</span>" +
       '<button class="tt nt-step" data-k="' + k + '" data-d="1">&#43;</button></span>';
 
-    bar.innerHTML = '<span class="nt-cap">기본 개체</span>' +
+    /* 한 무리는 함께 움직인다 — 줄이 바뀌어도 이름표와 칸이 갈라지지 않도록 */
+    bar.innerHTML =
+      '<span class="nt-set nt-types"><span class="nt-cap">기본 개체</span>' +
       TYPES.map(x => '<button class="tt wide nt-type' + (x.v === newType ? " on" : "") +
         '" data-v="' + x.v + '" data-tip="' + x.label + '">' +
         svgWrap(x.icon) + "<span>" + x.label + "</span></button>").join("") +
+      "</span>" +
       '<span class="tt-sep"></span>' +
-      '<span class="nt-cap2">글꼴</span>' +
+      '<span class="nt-set"><span class="nt-cap2">글꼴</span>' +
       '<button class="tt wide nt-font" data-tip="기본 글꼴"><span>' +
       fontDef(newFont).label + "</span>" + CARET + "</button>" +
-      numBox2("fs", "글꼴 크기") +
+      numBox2("fs", "글꼴 크기") + "</span>" +
       '<span class="tt-sep"></span>' +
-      '<span class="nt-cap2">크기</span>' +
+      '<span class="nt-set"><span class="nt-cap2">크기</span>' +
       '<span class="nt-cap3">너비</span>' + numBox2("w", "너비") +
-      '<span class="nt-cap3">높이</span>' + numBox2("h", "높이");
+      '<span class="nt-cap3">높이</span>' + numBox2("h", "높이") + "</span>";
     host.appendChild(bar);
 
     $$(".nt-type", bar).forEach(b => {
