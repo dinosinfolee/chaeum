@@ -8228,11 +8228,13 @@ ${sheetLink.on ? `
     </div>` : ""}
     <div id="stepRest"${sheetLink.on ? " hidden" : ""}>
 ${sheetLink.on ? `
+    <hr class="divider">
     <div class="field-row" id="rowFolder">
       <label class="field-label lb-big">수합 파일 저장 위치</label>
       <div class="fd-now">내 드라이브 › <b>Chaeum</b> › <b>${escapeHtml(S.srcName || "문서")}</b></div>
     </div>` : ""}
-    <div class="field-row" id="rowPat" style="margin-top:16px">
+${sheetLink.on ? '<hr class="divider">' : ""}
+    <div class="field-row" id="rowPat"${sheetLink.on ? "" : ' style="margin-top:16px"'}>
       <label class="field-label lb-big">회신 받을 파일명 규칙</label>
       <input class="input" id="mPattern" placeholder="[제출] {문서명}_{성명}">
       <div class="hint" id="patEx"></div>
