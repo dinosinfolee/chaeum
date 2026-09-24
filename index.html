@@ -1247,7 +1247,132 @@ body.start #tbar { display: none !important; }
 }
 .set-pop .menu-label:first-child { margin-top: 1px; }
 .sp-name { width: 100%; height: 30px; }
+/* ---------- 달력 · 시계 ---------- */
+.pick {
+  position: fixed; z-index: 700;
+  padding: 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(15,15,15,.18), 0 2px 8px rgba(15,15,15,.10);
+  animation: pickIn 130ms cubic-bezier(.16,1,.3,1);
+  user-select: none;
+}
+@keyframes pickIn {
+  from { opacity: 0; transform: translateY(-5px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 달력 */
+.dpick { width: 252px; }
+.dp-head { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+.dp-title { flex: 1; text-align: center; font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; }
+.dp-nav {
+  width: 26px; height: 26px; padding: 0; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 0; border-radius: 6px; background: transparent;
+  color: var(--text-muted); cursor: pointer;
+}
+.dp-nav:hover { background: var(--bg-hover); color: var(--text); }
+.dp-nav svg { width: 15px; height: 15px; }
+.dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.dp-dow {
+  height: 24px; display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--text-faint);
+}
+.dp-dow.sun { color: #D9534F; }
+.dp-dow.sat { color: #4A7BC8; }
+.dp-day {
+  height: 30px; border: 0; border-radius: 7px;
+  background: transparent; color: var(--text);
+  font-size: 12.5px; font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background 110ms ease, color 110ms ease;
+}
+.dp-day:hover { background: var(--bg-hover); }
+.dp-day.out { color: #C9C8C4; }
+.dp-day.today { font-weight: 700; color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent-border); }
+.dp-day.on { background: var(--accent); color: #fff; font-weight: 600; }
+.dp-day.on:hover { background: var(--accent-hover); }
+.dp-foot { display: flex; gap: 6px; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--border-soft); }
+.dp-foot .btn { flex: 1; height: 28px; font-size: 12.5px; }
+
+/* 시계 */
+.tpick { width: 208px; }
+.tp-cols { display: flex; gap: 6px; }
+.tp-col { flex: 1; min-width: 0; }
+.tp-cap { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-faint); padding-bottom: 5px; }
+.tp-list { height: 168px; overflow-y: auto; padding-right: 2px; }
+.tp-item {
+  width: 100%; height: 28px; border: 0; border-radius: 6px;
+  background: transparent; color: var(--text);
+  font-size: 12.5px; font-variant-numeric: tabular-nums;
+  cursor: pointer; margin-bottom: 2px;
+}
+.tp-item:hover { background: var(--bg-hover); }
+.tp-item.on { background: var(--accent); color: #fff; font-weight: 600; }
+.tp-foot { display: flex; gap: 6px; margin-top: 9px; padding-top: 9px; border-top: 1px solid var(--border-soft); }
+.tp-foot .btn { flex: 1; height: 28px; font-size: 12.5px; }
+.fld > input:disabled, .fld > textarea:disabled { color: #8A8985; -webkit-text-fill-color: #8A8985; }
+
+/* 선택 */
+.fld.check { justify-content: center; cursor: pointer; background: rgba(232,242,251,.4); }
+.fld.check .mark {
+  font-weight: 700; color: #111; line-height: 1;
+  opacity: 0; transform: scale(.7);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.fld.check.on .mark { opacity: 1; transform: scale(1); }
+.fld.check.on { background: rgba(255,255,255,.4); border-color: #B9D8F2; }
+
+/* 계산 */
+.fld.calc {
+  background: rgba(15,123,108,.08); border-color: #9CC8C1;
+  cursor: default; justify-content: center;
+}
+.fld.calc .val {
+  font-weight: 600; color: #0B5A4F; line-height: 1;
+  white-space: nowrap; overflow: hidden;
+}
+
+/* 서명 · 이미지 */
+.fld.sign, .fld.image { cursor: pointer; justify-content: center; padding: 1px; }
+.fld.sign img, .fld.image img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.fld.sign .ph, .fld.image .ph { font-size: 10px; color: #8A8985; pointer-events: none; }
+.fld.image { outline: none; }
+.fld.image:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(35,131,226,.18); }
+.fld.image.drop-on { border-color: var(--accent); background: var(--accent-bg); }
+
+/* 항목명 말풍선 */
+.fld .tip {
+  position: absolute; left: 0; bottom: calc(100% + 4px);
+  padding: 2px 6px; border-radius: 3px;
+  background: var(--text); color: #fff;
+  font-size: 11px; font-weight: 500; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity 120ms ease; z-index: 10;
+}
+.fld:hover .tip, .fld:focus-within .tip { opacity: 1; }
+
 /* 드라이브에서 불러오기 목록 */
+/* 설명 펼치개와 단계 */
+.lb-row { display: flex; align-items: center; gap: 6px; }
+.lb-help {
+  width: 17px; height: 17px; flex: none; padding: 0;
+  border: 1px solid var(--border-strong); border-radius: 999px;
+  background: #fff; color: var(--text-muted);
+  font-family: inherit; font-size: 11px; font-weight: 700; line-height: 1;
+  cursor: pointer;
+}
+.lb-help:hover, .lb-help.on { border-color: var(--accent); background: var(--accent-bg); color: var(--accent-hover); }
+.help-box {
+  margin-top: 8px; padding: 11px 13px;
+  border: 1px solid var(--border); border-radius: 9px; background: var(--bg-subtle);
+  font-size: 12.5px; line-height: 1.7; color: var(--text-muted);
+}
+.help-box .hb-row + .hb-row { margin-top: 5px; }
+.help-box b { color: var(--text); margin-right: 5px; }
+.help-box .muted { color: var(--text-faint); }
+.picker.pk-sm { height: 32px; min-width: 116px; padding: 0 10px; }
 .fd-row { display: flex; align-items: center; gap: 8px; }
 .fd-now {
   flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -4523,6 +4648,157 @@ function bindNumAll(box, fs, get, set) {
       fs.forEach(x => set(x, Math.round(get(x)) + d));
       paint();
     };
+  });
+}
+
+/* ---------- 달력 · 시계 ---------- */
+const pad = n => String(n).padStart(2, "0");
+let pickEl = null;
+function closePick() { if (pickEl) { pickEl.remove(); pickEl = null; } }
+document.addEventListener("mousedown", e => { if (pickEl && !pickEl.contains(e.target)) closePick(); });
+window.addEventListener("resize", closePick);
+
+function placePick(pop, anchor) {
+  document.body.appendChild(pop);
+  const a = anchor.getBoundingClientRect();
+  const p = pop.getBoundingClientRect();
+  let left = a.left;
+  let top = a.bottom + 6;
+  if (left + p.width > window.innerWidth - 10) left = window.innerWidth - p.width - 10;
+  if (left < 10) left = 10;
+  if (top + p.height > window.innerHeight - 10) top = Math.max(10, a.top - p.height - 6);
+  pop.style.left = left + "px";
+  pop.style.top = top + "px";
+  pickEl = pop;
+}
+
+const CARET_L = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg>';
+const CARET_R = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>';
+const DOW = ["일", "월", "화", "수", "목", "금", "토"];
+const isoOf = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+/* 표의 날짜 칸은 보이는 대로 담아 둔다. 다시 열 때만 ISO 로 되돌린다. */
+function dateText(iso) {
+  const p = String(iso || "").split("-");
+  return p.length === 3 ? p[0] + ". " + Number(p[1]) + ". " + Number(p[2]) + "." : "";
+}
+function hmOf2(text) {
+  const s = String(text || "");
+  const m = s.match(/(\d{1,2})\D+(\d{2})/);
+  if (!m) return "";
+  let H = Number(m[1]);
+  if (/오후/.test(s) && H < 12) H += 12;
+  if (/오전/.test(s) && H === 12) H = 0;
+  return pad(H) + ":" + m[2];
+}
+
+function isoOf2(text) {
+  const m = String(text || "").match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+  return m ? m[1] + "-" + pad(Number(m[2])) + "-" + pad(Number(m[3])) : "";
+}
+
+function openDatePick(anchor, cur, done) {
+  closePick();
+  const today = new Date();
+  const iso = typeof cur === "string" ? cur : (values[(cur || {}).id] || "");
+  const sel = /^\d{4}-\d{2}-\d{2}$/.test(iso) ? new Date(iso + "T00:00:00") : null;
+  let view = new Date((sel || today).getFullYear(), (sel || today).getMonth(), 1);
+
+  const pop = document.createElement("div");
+  pop.className = "pick dpick";
+
+  function render() {
+    const y = view.getFullYear(), m = view.getMonth();
+    const start = new Date(y, m, 1 - new Date(y, m, 1).getDay());
+    let cells = "";
+    for (let i = 0; i < 42; i++) {
+      const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+      const s = isoOf(d);
+      cells += '<button class="dp-day' +
+        (d.getMonth() !== m ? " out" : "") +
+        (s === isoOf(today) ? " today" : "") +
+        (sel && s === isoOf(sel) ? " on" : "") +
+        '" data-d="' + s + '">' + d.getDate() + "</button>";
+    }
+    pop.innerHTML =
+      '<div class="dp-head">' +
+        '<button class="dp-nav" data-mv="-1">' + CARET_L + "</button>" +
+        '<div class="dp-title">' + y + "년 " + (m + 1) + "월</div>" +
+        '<button class="dp-nav" data-mv="1">' + CARET_R + "</button>" +
+      "</div>" +
+      '<div class="dp-grid">' +
+        DOW.map((w, i) => '<div class="dp-dow' + (i === 0 ? " sun" : i === 6 ? " sat" : "") + '">' + w + "</div>").join("") +
+        cells +
+      "</div>" +
+      '<div class="dp-foot">' +
+        '<button class="btn btn-sm" data-act="today">오늘</button>' +
+        '<button class="btn btn-sm" data-act="clear">지우기</button>' +
+      "</div>";
+  }
+  render();
+  placePick(pop, anchor);
+
+  pop.addEventListener("mousedown", e => e.stopPropagation());
+  pop.addEventListener("click", e => {
+    const nav = e.target.closest(".dp-nav");
+    if (nav) { view = new Date(view.getFullYear(), view.getMonth() + Number(nav.dataset.mv), 1); render(); return; }
+    const day = e.target.closest(".dp-day");
+    if (day) { closePick(); done(day.dataset.d); return; }
+    const act = e.target.closest("[data-act]");
+    if (act) {
+      const picked = act.dataset.act === "today" ? isoOf(today) : "";
+      closePick(); done(picked);
+    }
+  });
+}
+
+function openTimePick(anchor, now, done) {
+  closePick();
+  const cur = /^(\d{1,2}):(\d{2})$/.exec(
+    typeof now === "string" ? now : (values[(now || {}).id] || ""));
+  let H = cur ? Number(cur[1]) : 9;
+  let M = cur ? Number(cur[2]) : 0;
+
+  const pop = document.createElement("div");
+  pop.className = "pick tpick";
+  const mins = [];
+  for (let i = 0; i < 60; i += 5) mins.push(i);
+  if (!mins.includes(M)) { mins.push(M); mins.sort((a, b) => a - b); }
+
+  function render() {
+    pop.innerHTML =
+      '<div class="tp-cols">' +
+        '<div class="tp-col"><div class="tp-cap">시</div><div class="tp-list" data-col="h">' +
+          Array.from({ length: 24 }, (_, h) =>
+            '<button class="tp-item' + (h === H ? " on" : "") + '" data-h="' + h + '">' + pad(h) + "</button>").join("") +
+        "</div></div>" +
+        '<div class="tp-col"><div class="tp-cap">분</div><div class="tp-list" data-col="m">' +
+          mins.map(m => '<button class="tp-item' + (m === M ? " on" : "") + '" data-m="' + m + '">' + pad(m) + "</button>").join("") +
+        "</div></div>" +
+      "</div>" +
+      '<div class="tp-foot">' +
+        '<button class="btn btn-sm" data-act="clear">지우기</button>' +
+        '<button class="btn btn-sm btn-primary" data-act="ok">확인</button>' +
+      "</div>";
+    pop.querySelectorAll(".tp-item.on").forEach(b => {
+      b.parentElement.scrollTop = b.offsetTop - b.parentElement.clientHeight / 2 + 14;
+    });
+  }
+  render();
+  placePick(pop, anchor);
+
+  pop.addEventListener("mousedown", e => e.stopPropagation());
+  pop.addEventListener("click", e => {
+    const it = e.target.closest(".tp-item");
+    if (it) {
+      if (it.dataset.h !== undefined) H = Number(it.dataset.h); else M = Number(it.dataset.m);
+      render();
+      return;
+    }
+    const act = e.target.closest("[data-act]");
+    if (act) {
+      const picked = act.dataset.act === "ok" ? pad(H) + ":" + pad(M) : "";
+      closePick(); done(picked);
+    }
   });
 }
 
@@ -7839,6 +8115,12 @@ const ICO_FONT  = '<path d="M5.5 19l5-14h3l5 14"/><path d="M8 14h8"/>';
 const ICO_SHEET = '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9.5h18M9.5 9.5V20"/>';
 const ICO_SHIELD= '<path d="M12 3l8 3.6v5.2c0 4.4-3.2 8.3-8 9.2-4.8-.9-8-4.8-8-9.2V6.6z"/><path d="M9.2 12l2 2 3.6-3.8"/>';
 const ICO_WARN  = '<path d="M12 4.2l8.6 15.3H3.4z"/><path d="M12 10v4"/><path d="M12 17h.01"/>';
+/* 2026-10-01 → 2026. 10. 1. */
+function fmtKDate(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+  return m ? m[1] + ". " + Number(m[2]) + ". " + Number(m[3]) + "." : String(iso || "");
+}
+
 /* 앞말의 받침을 보아 조사를 고른다 — 「고딕을」·「명조를」 */
 const josa = (w, withJong, without) => {
   const c = String(w || "").trim().slice(-1).charCodeAt(0);
@@ -7860,28 +8142,42 @@ $("#btnMake").onclick = () => {
     .map(f => '<span class="token" data-t="' + escapeHtml(f.name) + '">{' + escapeHtml(f.name) + "}</span>").join("");
 
   dialog("내보내기 설정", `
+    ${noName ? note(ICO_WARN, "명칭 없는 개체 " + noName + "개",
+        "명칭이 없는 개체는 파일명과 시트의 열로 사용할 수 없습니다. 목록에서 명칭을 지정하여 주십시오.", "warn") : ""}
+    ${note(ICO_FONT, "글꼴 " + fontList.length + "종 포함 · 약 " + fontMb + "MB",
+        "<b>" + fontList.map(fontLabel).join(" · ") + "</b>" +
+        josa(fontLabel(fontList[fontList.length - 1]), "을", "를") + " 사용합니다. 글꼴을 파일에 포함하므로, 작성자 컴퓨터에 해당 글꼴이 없거나 인터넷에 연결되지 않아도 화면과 PDF가 동일하게 출력됩니다.")}
+    ${note(ICO_SHIELD, "개인정보보호 및 정보보안에 대한 책임",
+        (sheetLink.on
+          ? "작성 내용은 <b>담당자 본인의 구글 설문지와 시트</b>로 전송되며, 기본적으로 저작자를 비롯한 제3자에게는 전송되지 않습니다. "
+          : "작성자가 저장한 파일은 해당 컴퓨터에 보관되며, 회신 방법은 담당자가 지정합니다. ") +
+        "따라서, 본 도구를 활용하는 <b>담당자가 직접</b> 수집 범위의 결정과 작성자 고지, 회신 자료의 보관과 파기, " +
+        "민감 정보의 보안 조치(암호 설정·접근 제한 등)를 해야 합니다.")}
 ${sheetLink.on ? `
+    <hr class="divider">
     <div class="field-row">
-      <label class="field-label">회신 및 수합 방식</label>
+      <label class="field-label lb-row">회신 및 수합 방식
+        <button class="lb-help" id="colHelp" type="button" aria-label="설명 보기">?</button>
+      </label>
       <div class="seg" id="mCollect">
         <button type="button" data-v="sheet">스프레드시트</button>
         <button type="button" data-v="html">HTML</button>
         <button type="button" data-v="pdf">PDF</button>
       </div>
       <div class="hint" id="colHint"></div>
-    </div>
+      <div class="help-box" id="colHelpBox" hidden>
+        <div class="hb-row"><b>스프레드시트</b> 항목별 값이 시트에 한 행으로 기록됩니다. 로그인 없이도 제출할 수 있으나, 표는 한 열에 JSON 형식으로 담기므로 행이 수백 개에 이르면 일부가 기록되지 않을 수 있습니다.</div>
+        <div class="hb-row"><b>HTML</b> 작성 내용이 담긴 양식 파일을 그대로 받습니다. 담당자 입력 칸을 이어서 채울 수 있습니다.</div>
+        <div class="hb-row"><b>PDF</b> 서식 그대로 굳어진 문서를 받습니다. 결재·보관에 적합합니다.</div>
+        <div class="hb-row muted">HTML·PDF를 받으려면 작성자가 구글 계정으로 로그인해야 합니다.</div>
+      </div>
+    </div>` : ""}
+    <div id="stepRest"${sheetLink.on ? " hidden" : ""}>
+${sheetLink.on ? `
     <div class="field-row" id="rowFolder">
       <label class="field-label">수합 파일 저장 위치</label>
-      <div class="fd-row">
-        <span class="fd-now" id="fdNow"></span>
-        <button class="btn btn-sm" id="fdPick" type="button">변경</button>
-      </div>
-      <div id="fdFind" hidden>
-        <input class="input" id="fdQ" placeholder="폴더 이름으로 찾기">
-        <div class="dv-list" id="fdList"></div>
-      </div>
-    </div>
-    <hr class="divider">` : ""}
+      <div class="fd-now">내 드라이브 › <b>Chaeum</b> › <b>${escapeHtml(S.srcName || "문서")}</b></div>
+    </div>` : ""}
     <div class="field-row" id="rowPat">
       <label class="field-label">회신 받을 파일명 규칙</label>
       <input class="input" id="mPattern" placeholder="[제출] {문서명}_{성명}">
@@ -7893,7 +8189,7 @@ ${sheetLink.on ? `
       </div>
     </div>
 
-    <hr class="divider">
+    <hr class="divider"${sheetLink.on ? " hidden" : ""}>
     <div class="field-row" id="rowOut"${sheetLink.on ? " hidden" : ""}>
       <label class="field-label">회신 받을 형식</label>
       <button class="picker" id="mOut" type="button">
@@ -7914,30 +8210,23 @@ ${sheetLink.on ? `
       <div class="hint" id="whoHint"></div>
     </div>
     <div class="field-row">
-      <label class="field-label">제출 제한</label>
-      <div class="fd-row">
-        <span class="sp-cap">마감</span>
-        <input class="input g-due" id="mDue" placeholder="예: 2026-10-01 18:00">
-        <button class="btn btn-sm" id="mDueClr" type="button">지우기</button>
+      <label class="sw-line bare" id="mDueSw">
+        <span class="sw-tx">제출 마감<span class="sw-sub" id="dueSub">마감 없이 계속 받습니다.</span></span>
+        <span class="sw"></span>
+      </label>
+      <div class="fd-row" id="dueRow" hidden style="margin-top:7px">
+        <button class="picker pk-sm" id="pDate" type="button">
+          <span class="pk-label">날짜</span>
+        </button>
+        <button class="picker pk-sm" id="pTime" type="button">
+          <span class="pk-label">시각</span>
+        </button>
       </div>
       <label class="sw-line bare" id="mOnce" style="margin-top:6px">
         <span class="sw-tx">1인 1회만 제출</span><span class="sw"></span>
       </label>
-      <div class="hint" id="dueHint"></div>
     </div>` : ""}
-
-    ${noName ? note(ICO_WARN, "명칭 없는 개체 " + noName + "개",
-        "명칭이 없는 개체는 파일명과 시트의 열로 사용할 수 없습니다. 목록에서 명칭을 지정하여 주십시오.", "warn") : ""}
-    ${note(ICO_FONT, "글꼴 " + fontList.length + "종 포함 · 약 " + fontMb + "MB",
-        "<b>" + fontList.map(fontLabel).join(" · ") + "</b>" +
-        josa(fontLabel(fontList[fontList.length - 1]), "을", "를") + " 사용합니다. 글꼴을 파일에 포함하므로, 작성자 컴퓨터에 해당 글꼴이 없거나 인터넷에 연결되지 않아도 화면과 PDF가 동일하게 출력됩니다.")}
-
-    ${note(ICO_SHIELD, "개인정보보호 및 정보보안에 대한 책임",
-        (sheetLink.on
-          ? "작성 내용은 <b>담당자 본인의 구글 설문지와 시트</b>로 전송되며, 기본적으로 저작자를 비롯한 제3자에게는 전송되지 않습니다. "
-          : "작성자가 저장한 파일은 해당 컴퓨터에 보관되며, 회신 방법은 담당자가 지정합니다. ") +
-        "따라서, 본 도구를 활용하는 <b>담당자가 직접</b> 수집 범위의 결정과 작성자 고지, 회신 자료의 보관과 파기, " +
-        "민감 정보의 보안 조치(암호 설정·접근 제한 등)를 해야 합니다.")}
+    </div>
   `, [
     { label: "취소" },
     { label: "내보내기", primary: true, keepOpen: true }
@@ -7969,6 +8258,7 @@ ${sheetLink.on ? `
   };
   outHint();
 
+  const whoRef = {};          // 제출 자격 다시 그리기 — 아래에서 채워 넣는다
   /* 파일명 예시 — 규칙을 적는 대로 곧바로 보여 준다 */
   const exOf = () => {
     const today = new Date();
@@ -7993,8 +8283,8 @@ ${sheetLink.on ? `
   $("#mPattern").addEventListener("input", patEx);
   patEx();
 
-  /* 수합 방식 — 여럿을 함께 고른다 */
-  let collect = fixCollect(S.collect);
+  /* 수합 방식 — 처음에는 아무것도 고르지 않은 채로 둔다 */
+  let collect = sheetLink.on ? { sheet: false, html: false, pdf: false } : fixCollect(S.collect);
   let folder = Object.assign({ id: "", name: "" }, S.folder || {});
   const seg = $("#mCollect");
   const colHint = () => {
@@ -8010,18 +8300,27 @@ ${sheetLink.on ? `
                  .filter(Boolean).join("·") + " 파일을 드라이브로 수집합니다. " +
                  "<b>작성자의 구글 로그인이 필요합니다.</b>");
     }
-    if (!lines.length) lines.push("<span style=\"color:var(--warn)\">하나 이상 선택하여 주십시오.</span>");
-    el.innerHTML = lines.join("<br>");
+    const any = collect.sheet || collect.html || collect.pdf;
+    el.innerHTML = any ? "" : "무엇으로 받을지 하나 이상 선택하여 주십시오.";
+
+    const rest = $("#stepRest");
+    if (rest) rest.hidden = sheetLink.on && !any;             // 고르기 전에는 아래를 보이지 않는다
     const row = $("#rowFolder");
     if (row) row.hidden = !(collect.html || collect.pdf);
     // 파일을 회신받지 않으면 파일명 규칙도 정할 까닭이 없다
     const pat = $("#rowPat");
     if (pat) pat.hidden = sheetLink.on && !(collect.html || collect.pdf);
+    if (whoRef.paint) whoRef.paint();
   };
-  const fdShow = () => {
-    const el = $("#fdNow");
-    if (el) el.textContent = folder.name || ("내 드라이브 › Chaeum › " + (S.srcName || "문서"));
-  };
+  const fdShow = () => {};
+  const helpBtn = $("#colHelp");
+  if (helpBtn) {
+    helpBtn.onclick = () => {
+      const box = $("#colHelpBox");
+      box.hidden = !box.hidden;
+      helpBtn.classList.toggle("on", !box.hidden);
+    };
+  }
   if (seg) {
     const paintSeg = () => $$("button", seg).forEach(b =>
       b.classList.toggle("on", !!collect[b.dataset.v]));
@@ -8048,6 +8347,13 @@ ${sheetLink.on ? `
     });
     const wSeg = $("#mWho");
     const whoPaint = () => {
+      const needLogin = collect.html || collect.pdf;   // 파일을 받으려면 로그인해야 한다
+      const nBtn = $$("button", wSeg).find(b => b.dataset.v === "none");
+      if (nBtn) {
+        nBtn.disabled = !!needLogin;
+        nBtn.style.opacity = needLogin ? ".45" : "";
+      }
+      if (needLogin && who.identify === "none") who.identify = "google";
       const personal = !domain || /^(gmail|googlemail)\.com$/i.test(domain);
       const dBtn = $$("button", wSeg).find(b => b.dataset.v === "domain");
       if (dBtn) {
@@ -8064,6 +8370,9 @@ ${sheetLink.on ? `
           : eff === "google"
           ? "구글 계정으로 로그인하면 조직 밖에서도 제출할 수 있으며, <b>제출자의 이메일이 함께 수집됩니다.</b>"
           : "로그인 없이 제출합니다. 제출자를 확인할 수 없으므로 <b>성명 개체</b>를 배치하여 주십시오.";
+      if (needLogin && eff !== "none") {
+        $("#whoHint").innerHTML += "<br>파일을 받으므로 <b>로그인 없이</b>는 선택할 수 없습니다.";
+      }
       const once = $("#mOnce");
       if (once) {
         const off = eff === "none";
@@ -8081,26 +8390,48 @@ ${sheetLink.on ? `
       who.onePerUser = who.onePerUser === false;
       whoPaint();
     };
-    const dueEl = $("#mDue");
-    dueEl.value = (who.closesAt || "").replace("T", " ");
-    dueEl.onkeydown = e => e.stopPropagation();
-    const dueHint = () => {
-      $("#dueHint").textContent = who.closesAt
+    /* 마감 — 켜 두었을 때만 날짜와 시각을 고른다 */
+    const duePart = () => {
+      const v = who.closesAt || "";
+      const i = v.indexOf("T");
+      return { d: i > 0 ? v.slice(0, i) : v, t: i > 0 ? v.slice(i + 1) : "" };
+    };
+    const duePaint = () => {
+      const on = !!who.closesAt;
+      $(".sw", $("#mDueSw")).classList.toggle("on", on);
+      $("#dueRow").hidden = !on;
+      $("#dueSub").textContent = on
         ? "정한 시각이 지나면 더 이상 받지 않습니다."
-        : "비워 두면 마감 없이 계속 받습니다.";
+        : "마감 없이 계속 받습니다.";
+      const p = duePart();
+      $(".pk-label", $("#pDate")).textContent = p.d ? fmtKDate(p.d) : "날짜";
+      $(".pk-label", $("#pTime")).textContent = p.t || "시각";
     };
-    const dueRead = () => {
-      const v = dueEl.value.trim();
-      const m = /^(\d{4})[-.\/ ](\d{1,2})[-.\/ ](\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?$/.exec(v);
-      if (!v) { who.closesAt = ""; dueHint(); return; }
-      if (!m) { $("#dueHint").innerHTML = "<span style=\"color:var(--danger)\">예: 2026-10-01 18:00</span>"; return; }
-      const p2 = n => String(n).padStart(2, "0");
-      who.closesAt = m[1] + "-" + p2(m[2]) + "-" + p2(m[3]) + "T" + p2(m[4] || 18) + ":" + (m[5] || "00");
-      dueHint();
+    const dueSet = (d, t) => {
+      const p = duePart();
+      const dd = d === undefined ? p.d : d;
+      const tt = t === undefined ? (p.t || "18:00") : t;
+      who.closesAt = dd ? dd + "T" + (tt || "18:00") : "";
+      duePaint();
     };
-    dueEl.oninput = dueRead;
-    $("#mDueClr").onclick = () => { dueEl.value = ""; who.closesAt = ""; dueHint(); };
-    dueHint();
+    $("#mDueSw").onclick = e => {
+      e.preventDefault();
+      if (who.closesAt) { who.closesAt = ""; duePaint(); return; }
+      const d = new Date();
+      d.setDate(d.getDate() + 7);
+      dueSet(d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" +
+             String(d.getDate()).padStart(2, "0"), "18:00");
+    };
+    $("#pDate").onclick = e => {
+      e.stopPropagation();
+      openDatePick(e.currentTarget, duePart().d, v => { if (v !== null) dueSet(v, undefined); });
+    };
+    $("#pTime").onclick = e => {
+      e.stopPropagation();
+      openTimePick(e.currentTarget, duePart().t, v => { if (v !== null) dueSet(undefined, v || "18:00"); });
+    };
+    duePaint();
+    whoRef.paint = whoPaint;
     whoPaint();
     window.__who = () => {
       const personal = !domain || /^(gmail|googlemail)\.com$/i.test(domain);
@@ -8109,39 +8440,6 @@ ${sheetLink.on ? `
       });
     };
 
-    /* 폴더 찾기 — 이름을 적으면 드라이브에서 찾아 고른다 */
-    const box = $("#fdFind"), q = $("#fdQ"), list = $("#fdList");
-    $("#fdPick").onclick = () => {
-      box.hidden = !box.hidden;
-      if (!box.hidden) setTimeout(() => q.focus(), 30);
-    };
-    let findTimer = null;
-    q.onkeydown = e => e.stopPropagation();
-    q.oninput = () => {
-      clearTimeout(findTimer);
-      findTimer = setTimeout(async () => {
-        const word = q.value.trim();
-        if (word.length < 1) { list.innerHTML = ""; return; }
-        list.innerHTML = '<div class="hint">찾는 중…</div>';
-        const res = await driveAsk("findFolders", "findFoldersDone", { q: word });
-        const fs = (res && res.folders) || [];
-        if (!fs.length) { list.innerHTML = '<div class="hint">그런 이름의 폴더가 없습니다.</div>'; return; }
-        list.innerHTML = fs.map((f, i) =>
-          '<button class="dv-item" type="button" data-i="' + i + '">' +
-          '<span class="dv-name">' + escapeHtml(f.name) + "</span>" +
-          '<span class="dv-sub">' + escapeHtml(f.path || "내 드라이브") + "</span></button>").join("");
-        $$(".dv-item", list).forEach(b => {
-          b.onclick = () => {
-            const f = fs[Number(b.dataset.i)];
-            folder = { id: f.id, name: f.path ? f.path + " › " + f.name : f.name };
-            fdShow();
-            box.hidden = true;
-            q.value = "";
-            list.innerHTML = "";
-          };
-        });
-      }, 300);
-    };
   }
   $$("#dlgBody .token").forEach(t => {
     t.onclick = () => {
