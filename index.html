@@ -5195,13 +5195,15 @@ function tableSkin(f, pg) {
     const flags = f.cols.map(STAT_COL);
     /* 셈하는 칸만 낱낱이 두고, 셈하지 않는 칸은 이어 붙여 한 칸으로 삼는다.
        셈할 수 있는 열은 이어 붙인 칸 안에서도 표로 다시 넣고 뺄 수 있다. */
-    const addCk = (c, i, slot) => {
+    /* 표시는 그 열 한가운데에 둔다 — 이어 붙인 칸 안에서도 제 열 자리를 지킨다 */
+    const addCk = (c, i, pct) => {
       if (!NUMERIC_COL(f.cols[i])) return;
       const on = flags[i];
       const ck = document.createElement("span");
       ck.className = "sum-ck" + (on ? " on" : "");
       ck.dataset.ci = i;
-      ck.style.left = (4 + slot * 18) + "px";
+      ck.style.left = pct + "%";
+      ck.style.transform = "translate(-50%, -50%)";
       ck.title = (f.cols[i].name || "열 " + (i + 1)) + (on ? " 합계에서 제외" : " 합계에 포함");
       ck.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
         'stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">' +
@@ -5212,7 +5214,7 @@ function tableSkin(f, pg) {
     while (i < f.cols.length) {
       if (flags[i]) {
         const c = cell("num sum", "", 1, tr, i);
-        addCk(c, i, 0);
+        addCk(c, i, 50);
         i++;
         continue;
       }
@@ -5221,9 +5223,13 @@ function tableSkin(f, pg) {
       const own = (f.sumCells || {})[i] || (i === 0 ? "합계" : "");
       const c = cell(i === 0 ? "th" : "num", own, j - i, tr, i);
       if (own && i !== 0) c.classList.add("fixed");
-      let slot = 0;
+      let tot = 0;
+      for (let q = i; q < j; q++) tot += (f.cols[q].w || 1);
+      let acc = 0;
       for (let q = i; q < j; q++) {
-        if (NUMERIC_COL(f.cols[q])) addCk(c, q, slot++);
+        const w = f.cols[q].w || 1;
+        if (NUMERIC_COL(f.cols[q])) addCk(c, q, ((acc + w / 2) / tot) * 100);
+        acc += w;
       }
       i = j;
     }
