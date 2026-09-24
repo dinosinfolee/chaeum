@@ -1071,8 +1071,12 @@ body.start #btnName { display: none; }
   height: auto; padding: 9px 11px; line-height: 1.55; resize: vertical;
   font-family: var(--mono); font-size: 12.5px;
 }
+.md-cap {
+  margin: 12px 0 4px;
+  font-size: 12px; font-weight: 700; color: var(--text-muted);
+}
 .md-prev {
-  margin-top: 9px; padding: 11px 12px; max-height: 210px; overflow-y: auto;
+  margin-top: 0; padding: 11px 12px; max-height: 210px; overflow-y: auto;
   border: 1px solid var(--border-soft); border-radius: var(--radius); background: var(--bg-subtle);
 }
 /* 마크다운 안내 글 */
@@ -10261,7 +10265,7 @@ $("#btnBot").onclick = () => {
       <label class="field-label">안내 글 <span class="opt">마크다운</span></label>
       <textarea class="input md-edit" id="dMd" rows="7" spellcheck="false"
         placeholder="# 제목&#10;- 항목&#10;**굵게**"></textarea>
-      <div class="hint">작성 화면 왼쪽에 이대로 보입니다. 적는 대로 아래에 나타납니다.</div>
+      <div class="md-cap">미리보기</div>
       <div class="md-prev"><div class="md-view" id="dMdPrev"></div></div>
     </div>`,
     [{ label: "취소" },
