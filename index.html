@@ -1080,31 +1080,38 @@ body.start #btnName { display: none; }
 #memoTool:hover { background: var(--accent-bg); color: var(--accent-hover); border-color: var(--accent-border); }
 #memoTool.on { background: #F5B301; border-color: #D79B00; color: #3A2E00; }
 #memoTool svg { width: 18px; height: 18px; }
-body.memo-arm .pglayer { cursor: copy; }
+body.memo-arm #stage, body.memo-arm .pglayer { cursor: copy; }
 .memo-note {
   position: absolute; z-index: 9;
   border-radius: 3px;
   box-shadow: 0 2px 7px rgba(15,15,15,.18);
   display: flex;
 }
-.memo-note.sel { outline: 2px solid var(--accent); outline-offset: 1px; z-index: 12; }
+.memo-note.sel { z-index: 12; }
 .memo-grip {
   position: absolute; left: 0; right: 0; top: 0; height: 9px;
   cursor: move; border-radius: 3px 3px 0 0;
   background: rgba(0,0,0,.06);
+  opacity: 0; transition: opacity 120ms ease;
 }
+.memo-note:hover > .memo-grip, .memo-note.sel > .memo-grip { opacity: 1; }
 .memo-in {
   flex: 1; min-width: 0; margin: 11px 6px 6px;
   border: 0; outline: 0; background: transparent; resize: none;
   font-family: inherit; line-height: 1.35;
 }
-.memo-in::placeholder { color: rgba(60,58,54,.38); }
+.memo-in::placeholder { color: transparent; }
+.memo-in:focus::placeholder { color: rgba(60,58,54,.32); }
 .memo-hd {
   position: absolute; right: 0; bottom: 0;
   width: 12px; height: 12px; cursor: nwse-resize;
   background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,.22) 50%);
+  opacity: 0; transition: opacity 120ms ease;
 }
+.memo-note:hover > .memo-hd, .memo-note.sel > .memo-hd { opacity: 1; }
 .memo-bar {
+  opacity: 0; pointer-events: none;
+  transition: opacity 120ms ease;
   position: absolute; left: 0; bottom: calc(100% + 6px);
   display: flex; align-items: center; gap: 5px;
   padding: 4px 6px;
@@ -1112,6 +1119,7 @@ body.memo-arm .pglayer { cursor: copy; }
   background: #fff; box-shadow: var(--shadow-lg);
   white-space: nowrap;
 }
+.memo-note:hover > .memo-bar, .memo-note.sel > .memo-bar { opacity: 1; pointer-events: auto; }
 .memo-fs { display: flex; align-items: center; gap: 2px; }
 .memo-fs button {
   width: 20px; height: 20px; padding: 0;
@@ -1133,7 +1141,7 @@ body.memo-arm .pglayer { cursor: copy; }
   color: var(--danger); cursor: pointer;
 }
 .memo-del:hover { background: #FDECEA; }
-.memo-del svg { width: 13px; height: 13px; }
+.memo-del svg { width: 14px; height: 14px; }
 .ck-line .ck {
   flex: none; width: 17px; height: 17px; border-radius: 5px;
   border: 1.5px solid var(--border-strong); background: #fff;
@@ -4328,12 +4336,6 @@ function attachDraw(layer, pi) {
   layer.addEventListener("mousedown", ev => {
     if (ev.target !== layer || ev.button !== 0) return;
     ev.preventDefault();
-    if (memoArm) {                              // 메모를 켠 채 찍은 자리에 쪽지를 붙인다
-      const rm = layer.getBoundingClientRect();
-      memoAdd(pi, (ev.clientX - rm.left) / rm.width, (ev.clientY - rm.top) / rm.height);
-      armMemo(false);
-      return;
-    }
     const rect = layer.getBoundingClientRect();
     const sx = ev.clientX - rect.left, sy = ev.clientY - rect.top;
     const gh = $("#ghost");
@@ -4709,8 +4711,10 @@ function memoBar(m, note) {
     '<span class="memo-sep"></span>' +
     '<div class="memo-sws ink" title="글자 빛깔">' + sw(MEMO_INK, "color") + '</div>' +
     '<span class="memo-sep"></span>' +
-    '<button class="memo-del" data-a="del" title="메모 지우기">' +
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>';
+    '<button class="memo-del" data-a="del" title="메모 삭제">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M4 7h16"/><path d="M10 11v6M14 11v6"/>' +
+    '<path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/></svg></button>';
   bar.addEventListener("mousedown", e => e.stopPropagation());
   bar.addEventListener("click", e => {
     const b = e.target.closest("button");
@@ -4757,8 +4761,13 @@ function renderMemos() {
     ta.style.color = m.color || MEMO_INK[0];
     ta.style.fontSize = Math.max(5, (m.fs || 11) * sc) + "px";
     ta.addEventListener("input", () => { m.text = ta.value; keepDraft(); });
-    ta.addEventListener("mousedown", e => { e.stopPropagation(); memoPickSoft(m.id, note); });
+    ta.addEventListener("mousedown", e => { e.stopPropagation(); memoPickSoft(m.id); });
     ta.addEventListener("keydown", e => e.stopPropagation());
+    ta.addEventListener("blur", () => {
+      if (memoSel !== m.id) return;
+      memoSel = null;
+      note.classList.remove("sel");
+    });
     note.appendChild(ta);
 
     const hd = document.createElement("div");
@@ -4767,24 +4776,21 @@ function renderMemos() {
 
     note.addEventListener("mousedown", e => {
       e.stopPropagation();
-      memoPickSoft(m.id, note);
+      memoPickSoft(m.id);
       if (e.target === hd) { startMemoSize(e, m, note, wrap); return; }
       if (e.target === grip) startMemoDrag(e, m, note, wrap);
     });
 
-    if (on) memoBar(m, note);
+    memoBar(m, note);
     wrap.appendChild(note);
   });
 }
 
 /* 고른 쪽지만 다시 그린다 - 적는 중에 글자가 튀지 않도록 */
-function memoPickSoft(id, note) {
+function memoPickSoft(id) {
   if (memoSel === id) return;
   memoSel = id;
   $$(".memo-note").forEach(n => n.classList.toggle("sel", n.dataset.id === id));
-  $$(".memo-bar").forEach(b => b.remove());
-  const m = (S.memos || []).find(x => x.id === id);
-  if (m && note) memoBar(m, note);
 }
 
 function startMemoDrag(ev, m, note, wrap) {
@@ -10490,6 +10496,25 @@ async function togglePreview() {
 $("#btnPreview").onclick = togglePreview;
 $("#btnDocSet").onclick = docSetPop;
 $("#memoTool").onclick = () => armMemo();
+/* 메모를 켠 채로는 작업판 어디를 찍어도 쪽지가 붙는다 — 문서 바깥도 된다 */
+$("#stage").addEventListener("mousedown", ev => {
+  if (!memoArm || ev.button !== 0) return;
+  if (ev.target.closest && ev.target.closest(".memo-note")) return;
+  const wraps = $$(".pgwrap");
+  if (!wraps.length) { armMemo(false); return; }
+  let best = 0, near = Infinity;
+  wraps.forEach((w, i) => {
+    const r = w.getBoundingClientRect();
+    const dy = ev.clientY < r.top ? r.top - ev.clientY
+             : ev.clientY > r.bottom ? ev.clientY - r.bottom : 0;
+    if (dy < near) { near = dy; best = i; }
+  });
+  const r = wraps[best].getBoundingClientRect();
+  ev.preventDefault();
+  ev.stopPropagation();
+  memoAdd(best, (ev.clientX - r.left) / r.width, (ev.clientY - r.top) / r.height);
+  armMemo(false);
+}, true);
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && memoArm) armMemo(false);
 });
