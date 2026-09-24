@@ -4839,7 +4839,8 @@ function bindNumAll(box, fs, get, set) {
 const pad = n => String(n).padStart(2, "0");
 let pickEl = null;
 function closePick() { if (pickEl) { pickEl.remove(); pickEl = null; } }
-document.addEventListener("mousedown", e => { if (pickEl && !pickEl.contains(e.target)) closePick(); });
+/* 상자나 문서 위에서는 누름이 가로채이므로, 걷어 내는 일은 잡아채는 차례에 한다 */
+document.addEventListener("mousedown", e => { if (pickEl && !pickEl.contains(e.target)) closePick(); }, true);
 window.addEventListener("resize", closePick);
 
 function placePick(pop, anchor) {
@@ -7447,6 +7448,11 @@ function addTypedField(type) {
     Math.max(0, Math.min(1 - h, at.y - h / 2)), w, h, type);
   renderBoxes(); renderList(); renderProps();
 }
+/* 쪽지는 어디를 누르든 접힌다 — 개체나 문서가 누름을 가로채도 잡아채는 차례에서 먼저 본다 */
+document.addEventListener("mousedown", e => {
+  if (menuEl && !e.target.closest(".menu")) closeMenu();
+}, true);
+
 document.addEventListener("mousedown", e => {
   closeMenu();
   if (cellFinish && !e.target.closest(".tc-edit")) cellFinish(true);
