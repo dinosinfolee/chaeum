@@ -1680,6 +1680,18 @@ body.start #tbar { display: none !important; }
   opacity: 0; transition: opacity 110ms ease, color 110ms ease, background 110ms ease;
 }
 .tc-fx svg { width: 100%; height: 100%; }
+/* 표 밖의 수식 개체에도 같은 단추를 둔다 */
+.box-fx {
+  position: absolute; right: 3px; top: 50%; transform: translateY(-50%);
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 17px; height: 17px; z-index: 4;
+  border-radius: 4px; background: rgba(255,255,255,.92); color: var(--text-muted);
+  cursor: pointer; opacity: 0; pointer-events: auto;
+  transition: opacity 110ms ease, color 110ms ease, background 110ms ease;
+}
+.box-fx svg { width: 100%; height: 100%; }
+.box:hover .box-fx, .box.sel .box-fx { opacity: 1; }
+.box-fx:hover { color: var(--accent); background: rgba(35,131,226,.14); }
 .box-tbl .tc.name:hover .tc-fx { opacity: 1; }
 .tc-fx:hover { color: var(--accent); background: rgba(35,131,226,.14); }
 
@@ -3898,6 +3910,17 @@ function renderBoxes() {
     });
     lbl.addEventListener("dblclick", e => e.stopPropagation());
     b.appendChild(lbl);
+
+    if (f.type === "expr") {               // 수식 개체 — 가리키면 fx 단추가 뜬다
+      const fx = document.createElement("span");
+      fx.className = "box-fx";
+      fx.title = "수식 수정";
+      fx.innerHTML = svgWrap('<text x="3.2" y="17.5" font-family="Georgia,serif" font-style="italic" font-size="14" font-weight="700" fill="currentColor" stroke="none">fx</text>');
+      fx.addEventListener("mousedown", e => e.stopPropagation());
+      fx.addEventListener("dblclick", e => e.stopPropagation());
+      fx.addEventListener("click", e => { e.stopPropagation(); select(f.id); fieldExprDialog(f); });
+      b.appendChild(fx);
+    }
 
     if (f.type === "table") {
       fixTable(f);
