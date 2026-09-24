@@ -1220,7 +1220,7 @@ body.start #tbar { display: none !important; }
 .head-tg svg { width: 15px; height: 15px; }
 #leftCol {
   width: 212px; flex: none;
-  display: flex; flex-direction: column; gap: 10px;
+  display: flex; flex-direction: column; gap: 6px;
   overflow: hidden;
 }
 #listWrap  { flex: 1000 1 auto; min-height: 0; }
@@ -1233,7 +1233,7 @@ body.start #tbar { display: none !important; }
 .card.folded .badge { opacity: .55; }
 .head-tg svg { transition: transform 140ms ease; }
 .card.folded .head-tg svg { transform: rotate(180deg); }
-#colGap { order: 2; flex: 1 1 0; min-height: 0; }
+#colGap { order: 2; flex: 1 1 0; min-height: 0; margin-top: -6px; }
 
 
 /* 단축키 */
@@ -10713,7 +10713,7 @@ $("#stage").addEventListener("contextmenu", e => {
 });
 
 /* ---------- 목록 · 속성 접기 ---------- */
-const PANEL_KEY = "chaeum_panels";
+const PANEL_KEY = "chaeum_panels2";
 /* 떠 있는 단추는 남아 있는 패널 바로 왼쪽에 붙인다 */
 function placeDock(st) {
   const on = st.list || st.keys;
@@ -10733,7 +10733,7 @@ function applyPanels(st) {
   try { localStorage.setItem(PANEL_KEY, JSON.stringify(st)); } catch (e) {}
 }
 const panels = (() => {
-  const d = { list: true, keys: true };
+  const d = { list: true, keys: false };   // 단축키는 접어 둔 채로 시작한다
   try { return Object.assign(d, JSON.parse(localStorage.getItem(PANEL_KEY) || "{}")); }
   catch (e) { return d; }
 })();
