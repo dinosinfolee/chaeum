@@ -3033,6 +3033,7 @@ function snapNow() {
     fields: JSON.parse(JSON.stringify(S.fields)),
     pages:  S.pages.map(p => Object.assign({}, p)),      // png 은 가리키기만
     docs:   S.docs.slice(),
+    memos:  JSON.parse(JSON.stringify(S.memos || [])),
     seq:    S.seq,
     bot:    S.bot,
     askMail: S.askMail,
@@ -3043,7 +3044,7 @@ function snapNow() {
   };
 }
 function snapSig(k) {
-  return JSON.stringify(k.fields) + "|" + k.bot + "|" + k.name + "|" +
+  return JSON.stringify(k.fields) + "|" + JSON.stringify(k.memos || []) + "|" + k.bot + "|" + k.name + "|" +
     k.pages.map(p => [p.pw, p.ph, p.blank ? 1 : 0, p.doc, p.dp].join(",")).join(";");
 }
 /* 바뀐 것이 있으면 한 걸음 남긴다 */
@@ -3073,6 +3074,7 @@ function applySnap(k) {
   S.fields  = JSON.parse(JSON.stringify(k.fields));
   S.pages   = k.pages.map(p => Object.assign({}, p));
   S.docs    = k.docs.slice();
+  S.memos   = JSON.parse(JSON.stringify(k.memos || []));
   S.seq     = k.seq;
   S.bot     = k.bot;
   S.askMail = !!k.askMail;
@@ -4771,14 +4773,14 @@ function memoAdd(page, x, y) {
     const ta = $('.memo-note[data-id="' + m.id + '"] .memo-in');
     if (ta) ta.focus();
   }, 30);
-  keepDraft();
+  keepDraft(); scheduleSnap();
 }
 
 function memoDrop(m) {
   S.memos = S.memos.filter(x => x !== m);
   if (memoSel === m.id) memoSel = null;
   renderMemos();
-  keepDraft();
+  keepDraft(); scheduleSnap();
 }
 
 /* 쪽지 위의 작은 도구 띠 - 글자 크기, 빛깔, 지우기 */
@@ -4810,7 +4812,7 @@ function memoBar(m, note) {
     else if (b.dataset.a === "fs-") m.fs = Math.max(6, (m.fs || 11) - 1);
     else if (b.dataset.a === "fs+") m.fs = Math.min(48, (m.fs || 11) + 1);
     renderMemos();
-    keepDraft();
+    keepDraft(); scheduleSnap();
   });
   note.appendChild(bar);
 }
@@ -4844,7 +4846,7 @@ function renderMemos() {
     ta.placeholder = "메모를 적으십시오";
     ta.style.color = m.color || MEMO_INK[0];
     ta.style.fontSize = Math.max(5, (m.fs || 11) * sc) + "px";
-    ta.addEventListener("input", () => { m.text = ta.value; keepDraft(); });
+    ta.addEventListener("input", () => { m.text = ta.value; keepDraft(); scheduleSnap(); });
     ta.addEventListener("mousedown", e => { e.stopPropagation(); memoPickSoft(m.id); });
     ta.addEventListener("keydown", e => e.stopPropagation());
     note.appendChild(ta);
@@ -4894,7 +4896,7 @@ function startMemoDrag(ev, m, note, wrap) {
   const up = () => {
     document.removeEventListener("mousemove", move);
     document.removeEventListener("mouseup", up);
-    if (moved) keepDraft();
+    if (moved) { keepDraft(); scheduleSnap(); }
   };
   document.addEventListener("mousemove", move);
   document.addEventListener("mouseup", up);
@@ -4911,7 +4913,7 @@ function startMemoSize(ev, m, note, wrap) {
   const up = () => {
     document.removeEventListener("mousemove", move);
     document.removeEventListener("mouseup", up);
-    keepDraft();
+    keepDraft(); scheduleSnap();
   };
   document.addEventListener("mousemove", move);
   document.addEventListener("mouseup", up);
