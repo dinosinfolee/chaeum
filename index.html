@@ -6373,6 +6373,15 @@ function tableUI(f, box, skin, pg) {
         paint();
         return;
       }
+      /* Ctrl — 표 안에서 칸을 고르고 있던 중이 아니면 표 자체를 고른다.
+         이미 이 표의 칸을 고른 채라면 종전처럼 떨어진 칸을 더하고 뺀다. */
+      if ((e.ctrlKey || e.metaKey) &&
+          !(tblSel && tblSel.id === f.id && S.multi.length <= 1)) {
+        tblSel = null;
+        tblHot = null;
+        toggleSelect(f.id);
+        return;
+      }
       /* Ctrl — 떨어져 있는 칸을 하나씩 더하고 뺀다 */
       if (e.ctrlKey || e.metaKey) {
         if (!spot) {
@@ -8447,11 +8456,8 @@ function toggleSelect(id) {
     tblHot = null;
   }
   S.multi = S.multi.includes(id) ? S.multi.filter(x => x !== id) : S.multi.concat(id);
-  /* 표는 칸 단위로 다루므로 다른 개체와 섞어 고르지 않는다 */
-  const tbl = S.fields.filter(x => x.type === "table").map(x => x.id);
-  if (S.multi.length > 1 && S.multi.some(x => tbl.includes(x))) {
-    S.multi = S.multi.filter(x => (tbl.includes(id) ? x === id : !tbl.includes(x)));
-  }
+  /* 표를 다른 개체와 함께 고르면 칸 단위 선택은 놓는다 */
+  if (S.multi.length > 1) { tblSel = null; tblHot = null; }
   S.sel = S.multi[S.multi.length - 1] || null;
   renderBoxes(); renderList(); renderProps();
 }
@@ -8467,17 +8473,12 @@ function selectMulti(id, ev) {
     const a = ids.indexOf(S.sel), b = ids.indexOf(id);
     if (a >= 0 && b >= 0) {
       S.multi = ids.slice(Math.min(a, b), Math.max(a, b) + 1);
-      const tbl2 = S.fields.filter(x => x.type === "table").map(x => x.id);
-      if (S.multi.length > 1) S.multi = S.multi.filter(x => !tbl2.includes(x));
       if (!S.multi.length) S.multi = [id];
+      if (S.multi.length > 1) { tblSel = null; tblHot = null; }
     }
   } else if (ev.ctrlKey || ev.metaKey) {
     S.multi = S.multi.includes(id) ? S.multi.filter(x => x !== id) : S.multi.concat(id);
-    /* 표는 칸 단위로 다루므로 다른 개체와 섞어 고르지 않는다 */
-    const tbl = S.fields.filter(x => x.type === "table").map(x => x.id);
-    if (S.multi.length > 1 && S.multi.some(x => tbl.includes(x))) {
-      S.multi = S.multi.filter(x => (tbl.includes(id) ? x === id : !tbl.includes(x)));
-    }
+    if (S.multi.length > 1) { tblSel = null; tblHot = null; }
   } else {
     S.multi = [id];
   }
