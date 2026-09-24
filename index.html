@@ -8243,7 +8243,7 @@ ${sheetLink.on ? `
         ${tokenList}
       </div>
       <div class="hint">{제출자}는 조직 계정이면 아이디, 조직 밖 계정이면 이메일이 들어가며,
-        로그인 없이 제출하는 경우에는 제출번호로 대체된다.</div>
+        로그인 없이 제출하는 경우에는 제출번호로 대체됩니다.</div>
     </div>
 
     <hr class="divider"${sheetLink.on ? " hidden" : ""}>
@@ -8689,8 +8689,8 @@ function askOverwrite(name, share) {
       '<span class="nt"><span class="nt-hd">' +
       (share ? "배포용 양식 원본" : "담당자 보관용 작업본") + "</span>" +
       (share
-        ? "작성자에게 전달되는 양식이다. 덮어쓰면 이미 배포한 URL은 그대로 유지되고 내용만 갱신된다."
-        : "담당자가 보관하는 작업본이며, 작성자에게 배포되지 않는다. 배포용 원본과는 별개의 파일이다.") +
+        ? "작성자에게 전달되는 양식입니다. 덮어쓰면 이미 배포한 URL은 그대로 유지되고 내용만 갱신됩니다."
+        : "담당자가 보관하는 작업본이며, 작성자에게 배포되지 않습니다. 배포용 원본과는 별개의 파일입니다.") +
       "</span></div>",
       [{ label: "취소", act: () => resolve(null) },
        { label: "새 이름으로", act: () => resolve("copy") },
