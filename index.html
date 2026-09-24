@@ -5932,6 +5932,18 @@ function tableUI(f, box, skin, pg) {
     h += btn("sum", f.sumRow ? "합계 행 삭제" : "합계 행 추가",
              f.sumRow ? ICO.sumDel : ICO.sumAdd, f.sumRow ? "on" : "");
 
+    /* 표도 하나의 개체다 — 누가 채우는지와 필수 여부를 여기서 정한다 */
+    h += sep + grp(
+      btn("tadmin", f.admin ? "담당자가 입력" : "작성자가 입력",
+          f.admin
+            ? '<path d="M12 3l8 3.6v5.2c0 4.4-3.2 8.3-8 9.2-4.8-.9-8-4.8-8-9.2V6.6z"/><path d="M9 12l2 2 4-4"/>'
+            : '<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-3.6 3.3-6.2 7.5-6.2s7.5 2.6 7.5 6.2"/>',
+          f.admin ? "on" : "") +
+      (f.admin ? "" :
+        btn("treq", f.required ? "필수 응답 해제" : "필수 응답",
+            '<path d="M12 4v16"/><path d="M5 8l14 8"/><path d="M19 8L5 16"/>',
+            f.required ? "on" : "")));
+
     h += btn("del", "이 개체 삭제", ICO.del, "danger tt-del");
 
     tools.innerHTML = h;
@@ -6109,6 +6121,17 @@ function tableUI(f, box, skin, pg) {
       return;
     }
     if (a === "tset") return tblPop(f, anchor, cur.tc);
+    if (a === "tadmin") {
+      f.admin = !f.admin;
+      if (f.admin) f.required = false;      // 담당자 입력은 필수가 될 수 없다
+      renderBoxes(); renderList(); renderProps();
+      return;
+    }
+    if (a === "treq") {
+      f.required = !f.required;
+      renderBoxes(); renderList(); renderProps();
+      return;
+    }
     if (a === "name") return namePop(f, anchor);
     if (a === "size") return sizePop(f, anchor);
     if (a === "tfont") {
