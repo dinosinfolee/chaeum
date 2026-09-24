@@ -1965,11 +1965,19 @@ body.start #tbar { display: none !important; }
 .sw-group .sw-line + .sw-line { border-top: 1px solid var(--border-soft); }
 .sw-tx { flex: 1; min-width: 0; font-size: 12.5px; font-weight: 600; }
 .sw-sub { display: block; margin-top: 1px; font-size: 11.5px; font-weight: 400; color: var(--text-muted); }
-.sw-line .sw {
+.sw-line .sw, .sw-tap .sw {
   width: 34px; height: 20px; flex: none; position: relative;
   border-radius: 999px; background: var(--border-strong);
   transition: background 150ms ease;
 }
+.sw-tap .sw::after {
+  content: ""; position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 999px; background: #fff;
+  box-shadow: 0 1px 2px rgba(0,0,0,.2);
+  transition: transform 150ms cubic-bezier(.3,.8,.4,1);
+}
+.sw-tap .sw.on { background: var(--accent); }
+.sw-tap .sw.on::after { transform: translateX(14px); }
 .sw-line .sw::after {
   content: ""; position: absolute; top: 2px; left: 2px;
   width: 16px; height: 16px; border-radius: 999px; background: #fff;
@@ -2360,7 +2368,7 @@ body.preview-on #crMark { display: none; }
   border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: var(--shadow-lg);
 }
 /* 두 칸짜리 내보내기 설정은 너비를 넓게 쓴다 */
-#dlg.wide { width: min(820px, calc(100vw - 32px)); }
+#dlg.wide { width: min(820px, calc(100vw - 32px)); overflow: hidden; }
 #dlg h3 { margin: 0 0 10px; font-size: 16px; font-weight: 600; }
 #dlgBody { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
 #dlgBtns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
@@ -2421,7 +2429,7 @@ body.preview-on #crMark { display: none; }
 /* 수식 적는 곳 — 열 이름은 이름표로 앉는다 */
 /* 내보내기 설정 - 배포와 회신을 나란히 */
 .ex-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22px; }
-.ex-col { min-width: 0; }
+.ex-col { min-width: 0; max-height: min(58vh, 520px); overflow-y: auto; padding-right: 8px; }
 .ex-col + .ex-col { padding-left: 22px; border-left: 1px solid var(--border-soft); }
 .ex-cap {
   margin: 0 0 10px; padding-bottom: 7px;
@@ -9918,14 +9926,6 @@ ${sheetLink.on ? `
         <button type="button" data-v="pdf">PDF</button>
       </div>
       <div class="hint" id="colHint"></div>
-      <div class="field-row" id="nowShare" hidden style="margin-top:9px">
-        <label class="field-label">현재 공유 중인 URL</label>
-        <div class="fd-row">
-          <input class="input" id="nowUrl" readonly>
-          <button class="btn btn-sm" id="nowCopy" type="button">복사</button>
-        </div>
-        <div class="hint">다시 내보내면 이 주소는 그대로 두고 내용만 새로 채워집니다.</div>
-      </div>
       <div class="help-box" id="colHelpBox" hidden>
         <div class="hb-row"><b>스프레드시트</b> 항목별 값이 시트에 한 행으로 기록됩니다. 로그인 없이도 제출할 수 있습니다.</div>
         <div class="hb-row"><b>기록 범위</b> 시트에는 글자만 정리됩니다. <b>단답·수치·서술·날짜·시간·선택·링크·수식·서명</b>이 열로 만들어지며, <b>그림과 표, 고정 문구, 스탬프</b>는 담기지 않습니다. 제출 파일을 함께 수합하는 경우 보관 폴더의 링크가 「파일」 열에 남으므로, 표와 그림은 그 파일에서 확인합니다.</div>
@@ -9937,12 +9937,6 @@ ${sheetLink.on ? `
       </div>
     </div>` : ""}
     <div id="stepRest"${sheetLink.on ? " hidden" : ""}>
-${sheetLink.on ? `
-    <div class="field-row" id="rowFolder">
-      <hr class="divider">
-      <label class="field-label lb-big">수합 파일 저장 위치</label>
-      <div class="fd-now">내 드라이브 › <b>Chaeum</b> › <b>${escapeHtml(S.srcName || "문서")}</b></div>
-    </div>` : ""}
 
     <div class="field-row" id="rowPat">
       ${sheetLink.on ? '<hr class="divider">' : ""}
@@ -10092,22 +10086,12 @@ ${sheetLink.on ? `
     if (rest) rest.hidden = sheetLink.on && !any;             // 고르기 전에는 아래를 보이지 않는다
     const go = $$("#dlgBtns .btn").pop();                     // 마지막이 내보내기 단추
     if (go) go.disabled = sheetLink.on && !any;
-    const row = $("#rowFolder");
-    if (row) row.hidden = !(collect.html || collect.pdf);
     // 파일을 회신받지 않으면 파일명 규칙도 정할 까닭이 없다
     const pat = $("#rowPat");
     if (pat) pat.hidden = sheetLink.on && !(collect.html || collect.pdf);
     if (whoRef.paint) whoRef.paint();
   };
   const fdShow = () => {};
-  const nowCopy = $("#nowCopy");
-  if (nowCopy) {
-    nowCopy.onclick = () => {
-      const el = $("#nowUrl");
-      el.select();
-      try { navigator.clipboard.writeText(el.value); toast("URL을 복사하였습니다", "ok", 2200); } catch (e) {}
-    };
-  }
   const helpBtn = $("#colHelp");
   if (helpBtn) {
     helpBtn.onclick = () => {
@@ -10149,13 +10133,6 @@ ${sheetLink.on ? `
         who = Object.assign(who, st.submitCfg);
         if (whoRef.paint) whoRef.paint();
         if (typeof duePaint === "function") duePaint();
-      }
-      if (st.shareUrl) {
-        const box = $("#nowShare");
-        if (box) {
-          box.hidden = false;
-          $("#nowUrl").value = st.shareUrl;
-        }
       }
     });
 
