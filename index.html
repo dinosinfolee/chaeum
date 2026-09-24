@@ -10385,7 +10385,7 @@ async function makeForm(title, pattern, outMode, offline, what, connect) {
       if (!submit) {
         busy(false);
         const go = await new Promise(r => dialog("시트에 연결하지 못하였습니다",
-          "시트의 채움 사이드바가 닫혀 있거나 응답이 늦어지고 있습니다.<br>" +
+          "시트와의 연결이 확인되지 않습니다. 시트를 통해 다시 접속하여 주십시오.<br>" +
           "이대로 내보내면 <b>제출 단추가 없는</b> 양식이 됩니다.",
           [{ label: "취소", act: () => r(false) },
            { label: "그대로 내보내기", primary: true, act: () => r(true) }]));
@@ -10405,7 +10405,8 @@ async function makeForm(title, pattern, outMode, offline, what, connect) {
 
     // 시트에서 열었으면 담당자의 드라이브에 담는다
     if (sheetLink.from && !sheetLink.on) {
-      toast("시트 창이 닫혀 있어 이 컴퓨터에 저장합니다 · 시트에서 다시 실행하여 주십시오", "warn", 6000);
+      toast("시트와의 연결이 확인되지 않아 이 컴퓨터에 저장합니다 · " +
+            "구글 드라이브에 저장하시려면 시트를 통해 다시 접속하여 주십시오", "warn", 6000);
     }
     if (sheetLink.on) {
       const share = !!connect;                    // 내보내기일 때만 공유 주소를 만든다
@@ -10423,7 +10424,8 @@ async function makeForm(title, pattern, outMode, offline, what, connect) {
       const url = await driveSave(html, name, title, share);
       busy(false);
       if (url) { driveDone(webApp || url, name, job, share, !!webApp); return; }
-      toast("구글 드라이브에 저장하지 못하여 이 컴퓨터에 내려받습니다" +
+      toast("시트와의 연결이 확인되지 않아 이 컴퓨터에 저장합니다 · " +
+            "구글 드라이브에 저장하시려면 시트를 통해 다시 접속하여 주십시오" +
             (driveWhy ? " · " + driveWhy : ""), "warn", 6000);
     }
 
