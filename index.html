@@ -2326,6 +2326,7 @@ body:not(.booting) #boot { opacity: 0; pointer-events: none; }
         </div>
         <div class="side-body" id="keysBody">
           <div class="key-row"><span class="ks"><span class="kbd">Ctrl</span><i>+</i><span class="kbd">C</span></span>복사</div>
+          <div class="key-row"><span class="ks"><span class="kbd">Ctrl</span><i>+</i><span class="kbd">X</span></span>잘라내기</div>
           <div class="key-row"><span class="ks"><span class="kbd">Ctrl</span><i>+</i><span class="kbd">V</span></span>붙여넣기</div>
           <div class="key-row"><span class="ks"><span class="kbd">Del</span></span>삭제</div>
           <div class="key-sep"></div>
@@ -7678,23 +7679,33 @@ let clip = null;            // 복사해 둔 개체
 const hover = { page: null, x: 0, y: 0 };   // 마우스가 놓인 면과 위치
 
 function copyField(f) {
-  clip = Object.assign({}, f, { calcTargets: (f.calcTargets || []).slice() });
-  toast("개체을 복사했습니다", null, 1800);
+  clip = JSON.parse(JSON.stringify(f));
+  toast("개체를 복사하였습니다", null, 1800);
+}
+/* 잘라내기 — 복사해 두고 그 자리에서는 지운다 */
+function cutField(f) {
+  clip = JSON.parse(JSON.stringify(f));
+  removeSelected();
+  toast("개체를 잘라냈습니다", null, 1800);
 }
 function pasteField() {
-  if (!clip) { toast("복사한 개체이 없습니다", "warn"); return; }
+  if (!clip) { toast("복사한 개체가 없습니다", "warn"); return; }
   // 가리킨 자리가 있으면 그곳에, 없으면 원본 바로 아래에 놓는다
   let page = clip.page, x = clip.x, y = Math.min(1 - clip.h, clip.y + clip.h * 1.15);
   const at = spot();
-  if (at) {
+  if (at && at.page !== clip.page) {
+    /* 다른 페이지에 붙일 때에는 본래 있던 자리를 그대로 지킨다 */
+    page = at.page;
+    x = Math.max(0, Math.min(1 - clip.w, clip.x));
+    y = Math.max(0, Math.min(1 - clip.h, clip.y));
+  } else if (at) {
     page = at.page;
     x = Math.max(0, Math.min(1 - clip.w, at.x - clip.w / 2));
     y = Math.max(0, Math.min(1 - clip.h, at.y - clip.h / 2));
   }
-  const c = Object.assign({}, clip, {
+  const c = Object.assign(JSON.parse(JSON.stringify(clip)), {
     id: "f" + (S.seq++),
-    name: clip.name + " 사본",
-    calcTargets: (clip.calcTargets || []).slice(),
+    name: uniqueName(clip.name),
     page, x, y
   });
   S.fields.push(c);
@@ -8455,6 +8466,7 @@ document.addEventListener("keydown", e => {
     if (tf) { e.preventDefault(); evenSpan(tf, key === "w"); return; }
   }
   if (mod && key === "c" && f) { e.preventDefault(); copyField(f); return; }
+  if (mod && key === "x" && f) { e.preventDefault(); cutField(f); return; }
   if (mod && key === "v")      { e.preventDefault(); pasteField(); return; }
   if (!f) return;
 
