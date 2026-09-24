@@ -9922,26 +9922,27 @@ $("#btnMake").onclick = () => {
     <div class="ex-cap">회신</div>
 ${sheetLink.on ? `
     <div class="field-row">
-      <label class="field-label lb-row lb-big">회신 및 수합 방식
+      <label class="field-label lb-row lb-big">함께 수합할 파일
         <button class="lb-help" id="colHelp" type="button" aria-label="설명 보기">?</button>
       </label>
       <div class="seg" id="mCollect">
-        <button type="button" data-v="sheet">스프레드시트</button>
+        <button type="button" data-v="none">받지 않음</button>
         <button type="button" data-v="html">HTML</button>
         <button type="button" data-v="pdf">PDF</button>
       </div>
       <div class="hint" id="colHint"></div>
       <div class="help-box" id="colHelpBox" hidden>
-        <div class="hb-row"><b>스프레드시트</b> 항목별 값이 시트에 한 행으로 기록됩니다. 로그인 없이도 제출할 수 있습니다.</div>
+        <div class="hb-row"><b>스프레드시트</b> 제출 내용은 언제나 본 시트에 한 행으로 기록됩니다. 파일을 함께 받지 않으면 작성자의 로그인 없이도 제출할 수 있습니다.</div>
         <div class="hb-row"><b>기록 범위</b> 시트에는 글자만 정리됩니다. <b>단답·수치·서술·날짜·시간·선택·링크·수식·서명</b>이 열로 만들어지며, <b>그림과 표, 고정 문구, 스탬프</b>는 담기지 않습니다. 제출 파일을 함께 수합하는 경우 보관 폴더의 링크가 「파일」 열에 남으므로, 표와 그림은 그 파일에서 확인합니다.</div>
         <div class="hb-row"><b>서명</b> 그림 파일로 보관 폴더에 저장되고, 시트의 해당 열에는 그 파일의 링크가 적힙니다.</div>
-        <div class="hb-row"><b>HTML</b> 작성 내용이 담긴 양식 파일을 그대로 수집합니다. 담당자 입력 항목을 이어서 작성할 수 있습니다.</div>
-        <div class="hb-row"><b>PDF</b> 서식이 고정된 문서로 수집합니다. 결재와 보관에 적합합니다.</div>
+        <div class="hb-row"><b>HTML</b> 작성 내용이 담긴 양식 파일이 보관 폴더에 쌓입니다. 사이드 패널의 <b>파일 검토</b>에서 한 건씩 확인할 수 있으며, 담당자 입력 항목을 이어서 작성할 수 있습니다.</div>
+        <div class="hb-row"><b>PDF</b> 서식이 고정된 문서로 보관됩니다. 결재와 보관에 적합하며, 확인은 보관 폴더에서 직접 합니다.</div>
+        <div class="hb-row"><b>선택</b> 두 형식 가운데 하나만 고를 수 있습니다. 파일을 받으려면 작성자의 구글 로그인이 필요합니다.</div>
         ${adminCnt ? '<div class="hb-row" style="color:var(--warn)"><b>권장</b> 담당자 입력 항목이 ' + adminCnt +
             '개 있으므로 <b>HTML</b>을 함께 선택하십시오. 회신 파일에서 담당자 항목을 이어서 작성할 수 있습니다.</div>' : ""}
       </div>
     </div>` : ""}
-    <div id="stepRest"${sheetLink.on ? " hidden" : ""}>
+    <div id="stepRest">
 
     <div class="field-row" id="rowPat">
       ${sheetLink.on ? '<hr class="divider">' : ""}
@@ -10013,8 +10014,6 @@ ${sheetLink.on ? `
   ]);
 
   const btns = $$("#dlgBtns .btn");
-  // 무엇으로 받을지 고르기 전에는 내보낼 수 없다
-  if (sheetLink.on) btns[btns.length - 1].disabled = true;
   const patField = chipField($("#mPattern"), () => patEx());
   patField.set(S.pattern || PAT_DEF);
 
@@ -10078,29 +10077,18 @@ ${sheetLink.on ? `
   patEx();
 
   /* 수합 방식 — 지난번에 정한 것이 있으면 그대로, 없으면 빈 채로 */
-  let collect = sheetLink.on ? { sheet: false, html: false, pdf: false } : fixCollect(S.collect);
+  let collect = sheetLink.on
+    ? Object.assign(fixCollect(S.collect), { sheet: true })
+    : fixCollect(S.collect);
   let folder = Object.assign({ id: "", name: "" }, S.folder || {});
   const seg = $("#mCollect");
   const colHint = () => {
     const el = $("#colHint");
     if (!el) return;
-    const lines = [];
-    if (collect.sheet) {
-      lines.push("항목별 값이 시트에 한 행으로 기록됩니다. 표는 한 열에 JSON 형식으로 담기므로, " +
-                 "<b>행이 수백 개에 이르면 일부가 기록되지 않을 수 있습니다.</b>");
-    }
-    if (collect.html || collect.pdf) {
-      lines.push("작성자가 저장한 " + [collect.html ? "HTML" : "", collect.pdf ? "PDF" : ""]
-                 .filter(Boolean).join("·") + " 파일을 드라이브로 수집합니다. " +
-                 "<b>작성자의 구글 로그인이 필요합니다.</b>");
-    }
-    const any = collect.sheet || collect.html || collect.pdf;
-    el.innerHTML = any ? "" : "무엇으로 받을지 하나 이상 선택하여 주십시오.";
-
-    const rest = $("#stepRest");
-    if (rest) rest.hidden = sheetLink.on && !any;             // 고르기 전에는 아래를 보이지 않는다
-    const go = $$("#dlgBtns .btn").pop();                     // 마지막이 내보내기 단추
-    if (go) go.disabled = sheetLink.on && !any;
+    el.innerHTML = (collect.html || collect.pdf)
+      ? "제출 내용은 본 시트에 기록되고, " + (collect.html ? "HTML" : "PDF") +
+        " 파일이 보관 폴더에 함께 쌓입니다. <b>작성자의 구글 로그인이 필요합니다.</b>"
+      : "제출 내용은 본 시트에만 기록됩니다. 작성자의 로그인 없이도 제출할 수 있습니다.";
     // 파일을 회신받지 않으면 파일명 규칙도 정할 까닭이 없다
     const pat = $("#rowPat");
     if (pat) pat.hidden = sheetLink.on && !(collect.html || collect.pdf);
@@ -10116,12 +10104,16 @@ ${sheetLink.on ? `
     };
   }
   if (seg) {
+    const segNow = () => collect.html ? "html" : collect.pdf ? "pdf" : "none";
     const paintSeg = () => $$("button", seg).forEach(b =>
-      b.classList.toggle("on", !!collect[b.dataset.v]));
+      b.classList.toggle("on", b.dataset.v === segNow()));
     paintSeg();
     $$("button", seg).forEach(b => {
       b.onclick = () => {
-        collect[b.dataset.v] = !collect[b.dataset.v];
+        const v = b.dataset.v;
+        collect.sheet = true;                 // 시트 기록은 늘 켜 둔다
+        collect.html = v === "html";
+        collect.pdf  = v === "pdf";
         paintSeg();
         syncOut();
         colHint();
