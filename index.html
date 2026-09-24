@@ -2228,6 +2228,8 @@ body.preview-on #crMark { display: none; }
   transition: opacity 200ms ease;
 }
 #boot .bt { font-size: 12.5px; font-weight: 600; color: var(--text-muted); letter-spacing: -0.01em; }
+/* 되살리는 동안에는 첫 화면을 아예 감춘다 */
+body.booting #drop { visibility: hidden; }
 body:not(.booting) #boot { opacity: 0; pointer-events: none; }
 
 .draft-card {
@@ -3204,10 +3206,8 @@ async function askDraft() {
   }
 
   if (d && d.pages && d.pages.length) applyDraft(d);
-  /* 화면에 다 그려진 뒤에 가림막을 걷는다 — 첫 화면이 얼비치지 않도록 */
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    document.body.classList.remove("booting");
-  }));
+  /* 화면에 다 그려진 뒤에 걷는다 */
+  await new Promise(res => requestAnimationFrame(() => requestAnimationFrame(res)));
 }
 
 /* ---------- 유틸 ---------- */
@@ -9932,8 +9932,15 @@ function connectSheet() {
   });
 }
 
-askDraft();
-setTimeout(() => document.body.classList.remove("booting"), 2500);   // 안전 장치
+/* 되살리는 동안에는 가림막을 걷지 않는다 — 첫 화면이 얼비치지 않도록 */
+let draftBusy = true;
+askDraft()
+  .catch(() => {})
+  .then(() => {
+    draftBusy = false;
+    document.body.classList.remove("booting");
+  });
+setTimeout(() => { if (!draftBusy) document.body.classList.remove("booting"); }, 2500);
 
 /* 문제 확인용 — 콘솔에서 상태와 주요 함수를 들여다볼 수 있게 열어 둔다 */
 window.editor = { S, addField, removeField, select, setFieldType, appendDoc, addPage, undo, redo, undoStack, redoStack,
