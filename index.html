@@ -1045,7 +1045,9 @@ body:not(.start) #fileName:hover { background: var(--bg-hover); border-color: va
   display: flex; align-items: center; justify-content: space-between; gap: 10px;
   margin: 2px 0 4px;
 }
-.ck-line.ck-mini { height: 26px; }
+.ck-line.ck-mini { height: 26px; gap: 7px; }
+.ck-line.ck-mini .ck { width: 14px; height: 14px; border-radius: 4px; border-width: 1.4px; }
+.ck-line.ck-mini.on .ck::after { left: 4.2px; top: 1.2px; width: 3.4px; height: 7.4px; border-width: 0 1.8px 1.8px 0; }
 .ck-line.ck-mini .ck-tx { font-size: 12px; font-weight: 600; color: var(--text-muted); }
 .ck-line.ck-mini.on .ck-tx { color: var(--text); }
 .pp-tip { font-size: 11.5px; color: var(--text-faint); }
@@ -3603,7 +3605,7 @@ function docSetPop() {
       </div>
       <div class="pp-foot">
         <label class="ck-line bare ck-mini" id="swGuide"><span class="ck"></span><span class="ck-tx">여백 안내선 표시</span></label>
-        <span class="pp-tip">이름표를 끌어 자리를 옮깁니다</span>
+        <span class="pp-tip">이름 태그를 드래그하여 위치를 이동할 수 있습니다</span>
       </div>
     </div>
 
@@ -3611,7 +3613,7 @@ function docSetPop() {
       <label class="field-label lb-big">표시할 항목</label>
       <div class="fd-row">
         <label class="ck-line bare ck-sm" id="ckNo"><span class="ck"></span><span class="ck-tx">쪽번호</span></label>
-        <label class="ck-line bare" id="ckTot"><span class="ck"></span><span class="ck-tx">전체 쪽수 함께 <span class="ck-sub">1 / 3</span></span></label>
+        <label class="ck-line bare ck-mini" id="ckTot"><span class="ck"></span><span class="ck-tx">전체 쪽수 함께 <span class="ck-sub">1 / 3</span></span></label>
       </div>
 
       <div class="fd-row" style="margin-top:9px">
