@@ -2359,6 +2359,8 @@ body.preview-on #crMark { display: none; }
   padding: 20px; background: #fff;
   border: 1px solid var(--border-strong); border-radius: 8px; box-shadow: var(--shadow-lg);
 }
+/* 두 칸짜리 내보내기 설정은 너비를 넓게 쓴다 */
+#dlg.wide { width: min(820px, calc(100vw - 32px)); }
 #dlg h3 { margin: 0 0 10px; font-size: 16px; font-weight: 600; }
 #dlgBody { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
 #dlgBtns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
@@ -2417,9 +2419,43 @@ body.preview-on #crMark { display: none; }
 /* 파일명 토큰 */
 .input.mono { font-family: var(--mono); font-size: 13px; letter-spacing: 0; }
 /* 수식 적는 곳 — 열 이름은 이름표로 앉는다 */
+/* 내보내기 설정 - 배포와 회신을 나란히 */
+.ex-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 22px; }
+.ex-col { min-width: 0; }
+.ex-col + .ex-col { padding-left: 22px; border-left: 1px solid var(--border-soft); }
+.ex-cap {
+  margin: 0 0 10px; padding-bottom: 7px;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 12px; font-weight: 800; letter-spacing: .02em; color: var(--text-faint);
+}
+.ex-col .field-row:first-of-type { margin-top: 0 !important; }
+.lb-ex {
+  flex: 1; min-width: 0; margin-left: 8px;
+  font-size: 11px; font-weight: 500; color: var(--text-faint);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* 뒤에 붙는 꼬리표를 품은 입력칸 */
+.in-sfx {
+  display: flex; align-items: center;
+  height: 36px; padding-right: 10px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: #fff;
+}
+.in-sfx:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+.in-sfx .input.bare {
+  flex: 1; min-width: 0; height: 34px;
+  border: 0; background: transparent; box-shadow: none;
+}
+.in-sfx .input.bare:focus { box-shadow: none; }
+.in-sfx .sfx { flex: none; font-size: 12.5px; color: var(--text-faint); }
+@media (max-width: 780px) {
+  .ex-cols { grid-template-columns: 1fr; }
+  .ex-col + .ex-col { padding-left: 0; border-left: 0; margin-top: 18px; }
+}
+
 .xfield {
-  min-height: 40px; height: auto; padding: 8px 10px;
-  display: block; line-height: 24px;
+  min-height: 36px; height: auto; padding: 6px 9px;
+  display: block; line-height: 22px;
   white-space: pre-wrap; word-break: break-all;
   cursor: text; overflow: hidden;
 }
@@ -2429,7 +2465,7 @@ body.preview-on #crMark { display: none; }
 }
 .xchip {
   display: inline-flex; align-items: center; vertical-align: middle;
-  height: 22px; padding: 0 8px; margin: -1px 1px 0;
+  height: 18px; padding: 0 7px; margin: -1px 1px 0; font-size: 11.5px;
   border: 1px solid var(--accent-border); border-radius: 6px;
   background: var(--accent-bg); color: var(--accent-hover);
   font-family: var(--font); font-size: 12px; font-weight: 600;
@@ -3606,6 +3642,7 @@ function dialogWarn(title, bodyHtml, buttons) {
 function dialog(title, bodyHtml, buttons) {
   $("#dlgTitle").textContent = title;
   $("#dlgBody").innerHTML = bodyHtml;
+  $("#dlg").classList.toggle("wide", bodyHtml.indexOf('class="ex-cols"') >= 0);
   const box = $("#dlgBtns"); box.innerHTML = "";
   buttons.forEach(b => {
     const el = document.createElement("button");
@@ -9839,6 +9876,9 @@ $("#btnMake").onclick = () => {
     .map(f => '<span class="token" data-t="' + escapeHtml(f.name) + '">{' + escapeHtml(f.name) + "}</span>").join("");
 
   dialog("내보내기 설정", `
+    <div class="ex-cols">
+    <div class="ex-col">
+    <div class="ex-cap">배포</div>
     ${noName ? note(ICO_WARN, "명칭 없는 개체 " + noName + "개",
         "명칭이 없는 개체는 파일명과 시트의 열로 사용할 수 없습니다. 목록에서 명칭을 지정하여 주십시오.", "warn") : ""}
     ${note(ICO_FONT, "글꼴 " + fontList.length + "종 포함 · 약 " + fontMb + "MB",
@@ -9850,8 +9890,19 @@ $("#btnMake").onclick = () => {
           : "작성자가 저장한 파일은 해당 컴퓨터에 보관되며, 회신 방법은 담당자가 지정합니다. ") +
         "따라서, 본 도구를 활용하는 <b>담당자가 직접</b> 수집 범위의 결정과 작성자 고지, 회신 자료의 보관과 파기, " +
         "민감 정보의 보안 조치(암호 설정·접근 제한 등)를 해야 합니다.")}
+    <div class="field-row" id="rowShare" style="margin-top:16px">
+      <label class="field-label lb-big">배포 파일 이름</label>
+      <div class="in-sfx">
+        <input class="input bare" id="mShare" maxlength="80" value="${escapeHtml(S.shareName || FORM_TAG + title)}">
+        <span class="sfx">.html</span>
+      </div>
+    </div>
+    </div>
+
+    <div class="ex-col">
+    <div class="ex-cap">회신</div>
 ${sheetLink.on ? `
-    <div class="field-row" style="margin-top:14px">
+    <div class="field-row">
       <label class="field-label lb-row lb-big">회신 및 수합 방식
         <button class="lb-help" id="colHelp" type="button" aria-label="설명 보기">?</button>
       </label>
@@ -9886,32 +9937,25 @@ ${sheetLink.on ? `
       <label class="field-label lb-big">수합 파일 저장 위치</label>
       <div class="fd-now">내 드라이브 › <b>Chaeum</b> › <b>${escapeHtml(S.srcName || "문서")}</b></div>
     </div>` : ""}
-    <div class="field-row" id="rowShare"${sheetLink.on ? "" : ' style="margin-top:16px"'}>
-      ${sheetLink.on ? '<hr class="divider">' : ""}
-      <label class="field-label lb-big">배포할 양식 파일명</label>
-      <input class="input" id="mShare" maxlength="80" value="${escapeHtml(S.shareName || FORM_TAG + title)}">
-      <div class="hint" id="shareEx"></div>
-    </div>
 
     <div class="field-row" id="rowPat">
       ${sheetLink.on ? '<hr class="divider">' : ""}
-      <label class="field-label lb-big">회신 받을 파일명 규칙</label>
+      <label class="field-label lb-big lb-row">회신 받을 파일의 이름 규칙
+        <span class="lb-ex" id="patEx"></span>
+      </label>
       <div class="input xfield" id="mPattern" contenteditable="true" spellcheck="false"
            data-ph="아래 이름표를 눌러 넣고 사이에 글자를 적으십시오"></div>
-      <div class="hint" id="patEx"></div>
       <div class="tokens">
         <span class="token" data-t="문서명">{문서명}</span>
         <span class="token" data-t="날짜">{날짜}</span>
         <span class="token" data-t="제출자">{제출자}</span>
         ${tokenList}
       </div>
-      <div class="hint">{제출자}에는 제출자의 이메일이 들어가며,
-        로그인 없이 제출하는 경우에는 제출번호로 대체됩니다.</div>
     </div>
 
     <div class="field-row" id="rowOut"${sheetLink.on ? " hidden" : ""}>
       <hr class="divider"${sheetLink.on ? " hidden" : ""}>
-      <label class="field-label lb-big">회신 받을 형식</label>
+      <label class="field-label lb-big">회신 받을 파일의 형식</label>
       <button class="picker" id="mOut" type="button">
         <span class="pk-ico"></span><span class="pk-label"></span>
         <svg class="pk-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9.5 12 15.5 18 9.5"/></svg>
@@ -9943,6 +9987,8 @@ ${sheetLink.on ? `
         </button>
       </div>
     </div>` : ""}
+    </div>
+    </div>
     </div>
   `, [
     { label: "취소" },
@@ -9999,16 +10045,8 @@ ${sheetLink.on ? `
   };
   const patEx = () => {
     const el = $("#patEx");
-    if (el) el.innerHTML = "예시 — <b>" + escapeHtml(exOf()) + "</b>";
+    if (el) el.textContent = exOf();
   };
-  const shareEx = () => {
-    const el = $("#shareEx");
-    if (!el) return;
-    const v = ($("#mShare").value.trim() || FORM_TAG + title).replace(/[\\/:*?"<>|]/g, "_");
-    el.innerHTML = "저장될 이름 — <b>" + escapeHtml(v + ".html") + "</b>";
-  };
-  $("#mShare").addEventListener("input", shareEx);
-  shareEx();
   patEx();
 
   /* 수합 방식 — 지난번에 정한 것이 있으면 그대로, 없으면 빈 채로 */
