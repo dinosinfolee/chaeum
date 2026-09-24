@@ -1356,6 +1356,9 @@ body.start #tbar { display: none !important; }
 /* 드라이브에서 불러오기 목록 */
 /* 설명 펼치개와 단계 */
 .lb-row { display: flex; align-items: center; gap: 6px; }
+.lb-big { font-size: 14px; font-weight: 700; color: var(--text); }
+.dlg-warn { display: inline-flex; align-items: center; color: var(--warn); }
+.dlg-warn svg { width: 19px; height: 19px; }
 .lb-help {
   width: 17px; height: 17px; flex: none; padding: 0;
   border: 1px solid var(--border-strong); border-radius: 999px;
@@ -2970,6 +2973,13 @@ function busy(on, txt) {
     busyWord = setTimeout(() => { tx.textContent = word; }, 900);
   }, 280);
 }
+/* 제목 앞에 경고 표시를 두는 쪽지 */
+function dialogWarn(title, bodyHtml, buttons) {
+  dialog(title, bodyHtml, buttons);
+  $("#dlgTitle").innerHTML =
+    '<span class="dlg-warn">' + svgWrap(ICO_WARN) + "</span>" + escapeHtml(title);
+}
+
 function dialog(title, bodyHtml, buttons) {
   $("#dlgTitle").textContent = title;
   $("#dlgBody").innerHTML = bodyHtml;
@@ -8154,9 +8164,8 @@ $("#btnMake").onclick = () => {
         "따라서, 본 도구를 활용하는 <b>담당자가 직접</b> 수집 범위의 결정과 작성자 고지, 회신 자료의 보관과 파기, " +
         "민감 정보의 보안 조치(암호 설정·접근 제한 등)를 해야 합니다.")}
 ${sheetLink.on ? `
-    <hr class="divider">
-    <div class="field-row">
-      <label class="field-label lb-row">회신 및 수합 방식
+    <div class="field-row" style="margin-top:14px">
+      <label class="field-label lb-row lb-big">회신 및 수합 방식
         <button class="lb-help" id="colHelp" type="button" aria-label="설명 보기">?</button>
       </label>
       <div class="seg" id="mCollect">
@@ -8166,10 +8175,10 @@ ${sheetLink.on ? `
       </div>
       <div class="hint" id="colHint"></div>
       <div class="help-box" id="colHelpBox" hidden>
-        <div class="hb-row"><b>스프레드시트</b> 항목별 값이 시트에 한 행으로 기록됩니다. 로그인 없이도 제출할 수 있으나, 표는 한 열에 JSON 형식으로 담기므로 행이 수백 개에 이르면 일부가 기록되지 않을 수 있습니다.</div>
-        <div class="hb-row"><b>HTML</b> 작성 내용이 담긴 양식 파일을 그대로 받습니다. 담당자 입력 칸을 이어서 채울 수 있습니다.</div>
-        <div class="hb-row"><b>PDF</b> 서식 그대로 굳어진 문서를 받습니다. 결재·보관에 적합합니다.</div>
-        <div class="hb-row muted">HTML·PDF를 받으려면 작성자가 구글 계정으로 로그인해야 합니다.</div>
+        <div class="hb-row"><b>스프레드시트</b> 항목별 값이 시트에 한 행으로 기록됩니다. 로그인 없이도 제출할 수 있으나, 표는 한 열에 JSON 형식으로 저장되므로 행이 수백 개에 이르면 일부가 기록되지 않을 수 있습니다.</div>
+        <div class="hb-row"><b>HTML</b> 작성 내용이 담긴 양식 파일을 그대로 수집합니다. 담당자 입력 항목을 이어서 작성할 수 있습니다.</div>
+        <div class="hb-row"><b>PDF</b> 서식이 고정된 문서로 수집합니다. 결재와 보관에 적합합니다.</div>
+        <div class="hb-row muted">HTML·PDF를 수집하려면 작성자의 구글 계정 로그인이 필요합니다.</div>
       </div>
     </div>` : ""}
     <div id="stepRest"${sheetLink.on ? " hidden" : ""}>
@@ -8305,6 +8314,8 @@ ${sheetLink.on ? `
 
     const rest = $("#stepRest");
     if (rest) rest.hidden = sheetLink.on && !any;             // 고르기 전에는 아래를 보이지 않는다
+    const go = $$("#dlgBtns .btn").pop();                     // 마지막이 내보내기 단추
+    if (go) go.disabled = sheetLink.on && !any;
     const row = $("#rowFolder");
     if (row) row.hidden = !(collect.html || collect.pdf);
     // 파일을 회신받지 않으면 파일명 규칙도 정할 까닭이 없다
@@ -8603,7 +8614,7 @@ function driveExists(name, docName) {
 /* 이미 있으면 어떻게 할지 고르게 한다 */
 function askOverwrite(name, share) {
   return new Promise(resolve => {
-    dialog("같은 이름의 파일이 있습니다",
+    dialogWarn("같은 이름의 파일이 있습니다",
       "<b>" + escapeHtml(name) + "</b> 이(가) 이미 저장되어 있습니다. 덮어쓰시겠습니까?",
       [{ label: "취소", act: () => resolve(null) },
        { label: "새 이름으로", act: () => resolve("copy") },
