@@ -5931,11 +5931,14 @@ function fieldTools(f, box, pg) {
 
     let mid = "";
     if (f.type === "link") {
+      /* 사슬 아이콘 뒤에 누가 적는지를 옅게 겹쳐 둔다 — 담당자는 방패, 작성자는 사람 */
+      const CHAIN = '<path d="M10.5 13a4.4 4.4 0 0 0 6.6.4l2.6-2.6a4.4 4.4 0 0 0-6.2-6.2L12 5.9"/>' +
+                    '<path d="M13.5 11a4.4 4.4 0 0 0-6.6-.4L4.3 13.2a4.4 4.4 0 0 0 6.2 6.2L11.5 18"/>';
+      const ROLE = f.fixed
+        ? '<g opacity=".42" transform="translate(11.8,11.8) scale(0.5)"><path d="M12 3l8 3.6v5.2c0 4.4-3.2 8.3-8 9.2-4.8-.9-8-4.8-8-9.2V6.6z"/></g>'
+        : '<g opacity=".42" transform="translate(11.8,11.8) scale(0.5)"><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c0-3.6 3.3-6.2 7.5-6.2s7.5 2.6 7.5 6.2"/></g>';
       mid += btn("lfix", f.fixed ? "고정 링크 — 담당자가 미리 적어 둡니다" : "작성자 링크 — 작성자가 적습니다",
-                 f.fixed
-                   ? '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/><path d="M5 5l14 14"/>'
-                   : '<path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>',
-                 f.fixed ? "on" : "");
+                 CHAIN + ROLE, f.fixed ? "on" : "");
     }
     if (f.type === "expr") mid += btn("expr", "수식 수정", '<text x="3.2" y="17.5" font-family="Georgia,serif" font-style="italic" font-size="14" font-weight="700" fill="currentColor" stroke="none">fx</text>', f.expr ? "on" : "");
     if (overShown(f)) mid += btn("flow", "오버플로우 시", '<path d="M4.6 4.5v15M19.4 4.5v15"/>' +
@@ -8307,8 +8310,9 @@ document.addEventListener("mousedown", e => {
 document.addEventListener("mousedown", e => {
   closeMenu();
   if (cellFinish && !e.target.closest(".tc-edit")) cellFinish(true);
+  /* 도구 띠를 누르는 것은 고른 자리를 놓는 일이 아니다 — 놓아 버리면 다시 그리느라 그 누름을 잃는다 */
   if ((tblSel || tblHot) &&
-      !e.target.closest(".th-col, .th-row, .tc, .menu, .tbl-tools, #ovl")) clearTblSel();
+      !e.target.closest(".th-col, .th-row, .tc, .menu, .tbl-tools, #tbar, #side, #ovl")) clearTblSel();
 });
 document.addEventListener("scroll", e => {
   // 차림표 안에서 굴린 것은 닫을 까닭이 없다
