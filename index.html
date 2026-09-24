@@ -1483,6 +1483,9 @@ body.start #tbar { display: none !important; }
 /* 드라이브에서 불러오기 목록 */
 /* 설명 펼치개와 단계 */
 .lb-row { display: flex; align-items: center; gap: 6px; }
+/* 제목 오른쪽 끝에 붙는 토글 */
+.lb-sw { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sw-tap { display: inline-flex; cursor: pointer; }
 .lb-big { font-size: 14px; font-weight: 700; color: var(--text); }
 .dlg-warn { display: inline-flex; align-items: center; color: var(--warn); }
 .dlg-warn svg { width: 19px; height: 19px; }
@@ -9479,11 +9482,9 @@ ${sheetLink.on ? `
     </div>
     <div class="field-row">
       <hr class="divider">
-      <label class="field-label lb-big">제출 마감</label>
-      <label class="sw-line bare" id="mDueSw">
-        <span class="sw-tx" id="dueSub">마감 없이 계속 받습니다.</span>
-        <span class="sw"></span>
-      </label>
+      <div class="field-label lb-big lb-sw">제출 마감
+        <span class="sw-tap" id="mDueSw"><span class="sw"></span></span>
+      </div>
       <div class="due-row" id="dueRow" hidden>
         <button class="picker due-pick" id="pDate" type="button">
           <span class="pk-label">날짜</span>
@@ -9701,9 +9702,6 @@ ${sheetLink.on ? `
       const on = !!who.closesAt;
       $(".sw", $("#mDueSw")).classList.toggle("on", on);
       $("#dueRow").hidden = !on;
-      $("#dueSub").textContent = on
-        ? "정한 시각이 지나면 더 이상 받지 않습니다."
-        : "마감 없이 계속 받습니다.";
       const p = duePart();
       $(".pk-label", $("#pDate")).textContent = p.d ? fmtKDate(p.d) : "날짜";
       $(".pk-label", $("#pTime")).textContent = p.t || "시각";
