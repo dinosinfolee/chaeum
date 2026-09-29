@@ -10350,9 +10350,9 @@ $("#btnMake").onclick = () => {
   const fontList = usedFontKeys();
   const fontMb = fontList.reduce((n, k) => n + (fontDef(k).mb || 0), 0).toFixed(1);
   const title = S.srcName || "신청서";
-  /* 파일 이름에 쓸 만한 것은 글자 칸뿐이다 — 단답과 서술만 내놓는다 */
+  /* 파일 이름에 쓸 만한 것은 글자 칸 — 단답·서술과 고를 항목이 정해진 선택을 내놓는다 */
   const tokenList = S.fields
-    .filter(f => (f.type === "text" || f.type === "multiline") && f.name.trim())
+    .filter(f => (f.type === "text" || f.type === "multiline" || f.type === "pick") && f.name.trim())
     .map(f => '<span class="token" data-t="' + escapeHtml(f.name) + '">{' + escapeHtml(f.name) + "}</span>").join("");
 
   dialog("내보내기 설정", `
@@ -10539,6 +10539,10 @@ ${sheetLink.on ? `
       const f = S.fields.find(x => x.name.trim() === k);
       if (!f) return "";
       if (f.type === "check") return "예";
+      if (f.type === "pick") {
+        const first = (f.opts || []).map(x => String(x).trim()).find(Boolean);
+        if (first) return first.slice(0, 12);
+      }
       return (f.guide || "").trim().slice(0, 12) || "○○";
     });
     out = out.replace(/[\\/:*?"<>|]/g, "_").replace(/_{2,}/g, "_").trim();
