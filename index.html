@@ -1187,7 +1187,18 @@ body.preview-on #memoTool { display: none; }
   color: var(--text-muted); cursor: pointer; font-size: 13px; line-height: 1;
 }
 .memo-fs button:hover { background: var(--bg-hover); color: var(--text); }
-.memo-fs span { min-width: 16px; text-align: center; font-size: 11.5px; font-weight: 700; }
+.memo-fs span { min-width: 20px; text-align: center; font-size: 11.5px; font-weight: 700; }
+.memo-fs .memo-fsv { cursor: text; border-radius: 4px; }
+.memo-fs .memo-fsv:hover { background: var(--bg-hover); }
+.memo-fsin {
+  width: 30px; height: 20px; padding: 0; margin: 0;
+  border: 0; border-radius: 4px; outline: none;
+  background: var(--accent-bg); color: var(--text);
+  font-family: inherit; font-size: 11.5px; font-weight: 700; text-align: center;
+}
+.memo-fsin::-webkit-outer-spin-button, .memo-fsin::-webkit-inner-spin-button {
+  -webkit-appearance: none; margin: 0;
+}
 .memo-sep { width: 1px; height: 16px; background: var(--border-soft); }
 .memo-sws { display: flex; gap: 3px; }
 .memo-sw {
@@ -4974,6 +4985,42 @@ function memoBar(m, note) {
     renderMemos();
     keepDraft(); scheduleSnap();
   });
+  /* 크기는 눌러서 바로 적을 수도 있다 */
+  const val = $("span", $(".memo-fs", bar));
+  if (val) {
+    val.title = "눌러서 직접 입력";
+    val.classList.add("memo-fsv");
+    val.onmousedown = e => e.stopPropagation();
+    val.ondblclick = e => e.stopPropagation();
+    val.onclick = e => {
+      e.stopPropagation();
+      const inp = document.createElement("input");
+      inp.className = "memo-fsin";
+      inp.type = "number";
+      inp.min = 6; inp.max = 48;
+      inp.value = m.fs || 11;
+      val.replaceWith(inp);
+      inp.focus(); inp.select();
+      let over = false;
+      const fin = ok => {
+        if (over) return;
+        over = true;
+        if (ok) {
+          const n = Math.round(Number(inp.value));
+          if (n >= 6) m.fs = Math.min(48, n);
+        }
+        renderMemos();
+        keepDraft(); scheduleSnap();
+      };
+      inp.onkeydown = ev => {
+        ev.stopPropagation();
+        if (ev.key === "Enter") { ev.preventDefault(); fin(true); }
+        if (ev.key === "Escape") { ev.preventDefault(); fin(false); }
+      };
+      inp.onmousedown = ev => ev.stopPropagation();
+      inp.onblur = () => fin(true);
+    };
+  }
   note.appendChild(bar);
 }
 
