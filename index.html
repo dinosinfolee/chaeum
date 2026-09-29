@@ -2469,6 +2469,8 @@ body.preview-on #crMark { display: none; }
 .note.warn .nt-hd { color: var(--warn); }
 .hint { font-size: 12.5px; color: var(--text-muted); line-height: 1.65; margin-top: 5px; }
 .hint b { color: var(--text); font-weight: 600; }
+/* 쪽지의 제목 바로 밑에 놓이는 안내 */
+.dlg-lead { margin: 0 0 12px; }
 .kbd {
   display: inline-block; padding: 0 4px; min-width: 17px; text-align: center;
   border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 3px;
@@ -4298,6 +4300,8 @@ function layoutPop(pi) {
   if (!pg) return;
   const now = String(pg.layout || "");
   dialog("작성자에게 제공할 레이아웃의 이름 지정", `
+    <div class="hint dlg-lead">복제 레이아웃으로 지정하면, 작성자가 이 레이아웃으로
+      페이지를 더할 수 있습니다. 적어 두신 이름이 그 단추에 쓰입니다.</div>
     <div class="field-row">
       <input class="input" id="layName" maxlength="40"
              placeholder="예: 사진 2장" value="${escapeHtml(now)}">
