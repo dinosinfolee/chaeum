@@ -10597,6 +10597,8 @@ ${sheetLink.on ? `
     mailPaint();
   }
   patEx();
+  /* 칸마다 첫 줄의 가름선은 걷어 낸다 — 시트와 잇지 않았을 때에도 걸리도록 */
+  ruleFix();
 
   /* 수합 방식 — 지난번에 정한 것이 있으면 그대로, 없으면 빈 채로 */
   let collect = sheetLink.on
