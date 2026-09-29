@@ -4908,6 +4908,34 @@ function memoAdd(page, x, y) {
   keepDraft(); scheduleSnap();
 }
 
+/* 쪽지 베끼기 — 개체와 따로 담아 두고, 마지막으로 베낀 것이 무엇인지 적어 둔다 */
+let memoClip = null;
+let lastCopy = "";
+function memoCopy(m) {
+  if (!m) return;
+  memoClip = JSON.parse(JSON.stringify(m));
+  lastCopy = "memo";
+  toast("쪽지를 복사하였습니다", null, 1800);
+}
+function memoPaste() {
+  if (!memoClip) return false;
+  const at = spot();
+  const page = at ? at.page : (memoClip.page || 0);
+  const m = JSON.parse(JSON.stringify(memoClip));
+  m.id = "m" + Date.now().toString(36) + Math.floor(Math.random() * 1e3).toString(36);
+  m.page = page;
+  /* 마우스가 놓인 자리에, 없으면 본디 자리에서 조금 비켜 둔다 */
+  m.x = Math.max(0, Math.min(1 - m.w, at ? at.x - m.w / 2 : memoClip.x + 0.02));
+  m.y = Math.max(0, Math.min(1 - m.h, at ? at.y - m.h / 2 : memoClip.y + 0.02));
+  if (!S.memos) S.memos = [];
+  S.memos.push(m);
+  memoSel = m.id;
+  renderMemos();
+  keepDraft(); scheduleSnap();
+  toast("쪽지를 붙여넣었습니다", "ok", 1800);
+  return true;
+}
+
 function memoDrop(m) {
   S.memos = S.memos.filter(x => x !== m);
   if (memoSel === m.id) memoSel = null;
@@ -9265,6 +9293,7 @@ function copyField(f) {
   else if (f) list = [f];
   else if (S.multi.length === 1) list = S.fields.filter(x => x.id === S.multi[0]);
   if (!list.length) { toast("복사할 개체를 먼저 고르십시오", "warn", 1800); return; }
+  lastCopy = "field";
   clip = {
     page: list[0].page,
     ax: Math.min.apply(null, list.map(x => x.x)),
@@ -10036,11 +10065,27 @@ document.addEventListener("keydown", e => {
     const m = (S.memos || []).find(x => x.id === memoSel);
     if (m) { e.preventDefault(); memoDrop(m); return; }
   }
+  /* 쪽지를 골라 두었으면 쪽지를 베낀다 */
+  if (mod && memoSel && (key === "c" || key === "x")) {
+    const m = (S.memos || []).find(x => x.id === memoSel);
+    if (m) {
+      e.preventDefault();
+      memoCopy(m);
+      if (key === "x") memoDrop(m);
+      return;
+    }
+  }
   /* 고른 것이 있으면 S.sel 이 비어 있어도 복사·잘라내기가 된다 */
   const anySel = f || (S.multi.length ? S.fields.find(x => x.id === S.multi[0]) : null);
   if (mod && key === "c" && anySel) { e.preventDefault(); copyField(anySel); return; }
   if (mod && key === "x" && anySel) { e.preventDefault(); cutField(anySel); return; }
-  if (mod && key === "v")      { e.preventDefault(); pasteField(); return; }
+  if (mod && key === "v") {
+    e.preventDefault();
+    /* 마지막으로 베낀 것이 쪽지면 쪽지를, 아니면 개체를 붙인다 */
+    if (lastCopy === "memo" && memoPaste()) return;
+    pasteField();
+    return;
+  }
   if (!f) return;
 
   if (e.key === "Delete" || e.key === "Backspace") {
