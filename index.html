@@ -2794,8 +2794,9 @@ body:not(.booting) #boot { opacity: 0; pointer-events: none; }
       <h2>파일을 이곳에 놓으십시오</h2>
       <p><b>PDF · PNG · JPG</b> 문서를 놓으면 새 양식을 만듭니다.<br>
          이미 만들어 둔 <b>양식 파일(HTML)</b>을 놓으면 이어서 편집합니다.</p>
-      <div style="display:flex;gap:8px;justify-content:center">
-        <button class="btn btn-primary" id="btnPick">파일 선택</button>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" id="btnPick">내 컴퓨터에서</button>
+        <button class="btn" id="btnDrive" hidden>내 드라이브에서</button>
         <button class="btn" id="btnNew2">빈 문서로 시작</button>
       </div>
     </div>
@@ -11272,6 +11273,10 @@ const sheetLink = {
 /* 시트에서 열었으면 저장이 어디로 가는지 미리 알린다 */
 (function () {
   if (!sheetLink.from) return;
+  if (sheetLink.on) {                       // 드라이브에서 바로 불러올 수 있다
+    const dv = document.getElementById("btnDrive");
+    if (dv) { dv.hidden = false; dv.onclick = () => openFromDrive(); }
+  }
   const b = document.getElementById("btnSave");
   if (b) b.dataset.tip = "저장 — 내 구글 드라이브에 보관 (Ctrl S)";
   const m = document.getElementById("btnMake");
