@@ -2473,6 +2473,13 @@ body.preview-on #crMark { display: none; }
 /* 제목 오른쪽 끝에 스위치를 두는 쪽지 */
 #dlgTitle.has-sw { display: flex; align-items: center; gap: 10px; }
 #dlgTitle.has-sw .dlg-sw { margin-left: auto; }
+/* 서브 콘텐츠 창 — 꺼 두면 보이되 손대지 못한다 */
+#subBody.off { opacity: .42; pointer-events: none; user-select: none; }
+.sub-top { display: flex; gap: 16px; align-items: flex-start; }
+.sub-top .st-cell { flex: 1; min-width: 0; }
+.sub-top .st-cell.w { flex: 0 0 186px; }
+.sub-top .num-field { width: 100%; }
+.sub-div { height: 1px; margin: 18px 0 14px; background: var(--border-soft); }
 /* 지난 설정을 시트에서 받아 오는 동안 덮어 둔다 — 값이 눈앞에서 바뀌지 않도록 */
 #dlg { position: relative; }
 .dlg-veil {
@@ -10853,26 +10860,27 @@ $("#btnBot").onclick = () => {
   let kind = S.subKind === "md" ? "md" : "web";
   dialog("서브 콘텐츠", `
     <div id="subBody">
-    <div class="field-row">
-      <label class="field-label lb-row">기본 너비 비율
-        <span class="lb-ex" id="bwEx"></span>
-      </label>
-      <div class="num-field" id="dBotW" style="width:150px">
-        <button class="num-btn" type="button" data-d="-1">&#8722;</button>
-        <input class="num-input" type="number" min="15" max="50" step="5">
-        <span class="num-unit">%</span>
-        <button class="num-btn" type="button" data-d="1">&#43;</button>
+    <div class="field-row sub-top">
+      <div class="st-cell w">
+        <label class="field-label lb-row">기본 너비 비율
+          <span class="lb-ex" id="bwEx"></span>
+        </label>
+        <div class="num-field" id="dBotW">
+          <button class="num-btn" type="button" data-d="-1">&#8722;</button>
+          <input class="num-input" type="number" min="15" max="50" step="5">
+          <span class="num-unit">%</span>
+          <button class="num-btn" type="button" data-d="1">&#43;</button>
+        </div>
+      </div>
+      <div class="st-cell">
+        <label class="field-label">테마</label>
+        <div class="seg" id="dBotTheme">
+          <button type="button" data-v="light">밝게</button>
+          <button type="button" data-v="dark">어둡게</button>
+        </div>
       </div>
     </div>
-    <div class="field-row">
-      <label class="field-label">테마</label>
-      <div class="seg" id="dBotTheme">
-        <button type="button" data-v="light">밝게</button>
-        <button type="button" data-v="dark">어둡게</button>
-      </div>
-      <div class="hint">PDF 처럼 바탕이 어두운 콘텐츠는 <b>어둡게</b>가 자연스럽습니다.</div>
-    </div>
-    <div class="gp-div"></div>
+    <div class="sub-div"></div>
     <div class="field-row">
       <div class="seg" id="subKind">
         <button type="button" data-v="web">웹 콘텐츠</button>
@@ -10915,7 +10923,7 @@ $("#btnBot").onclick = () => {
     '<span class="dlg-sw"><span class="sw-tap" id="subSw"><span class="sw"></span></span></span>';
   const subPaint = () => {
     $(".sw", $("#subSw")).classList.toggle("on", subUse);
-    $("#subBody").hidden = !subUse;
+    $("#subBody").classList.toggle("off", !subUse);   // 보이되 손대지 못하게
   };
   $("#subSw").onclick = e => { e.preventDefault(); subUse = !subUse; subPaint(); };
   subPaint();
@@ -10928,7 +10936,7 @@ $("#btnBot").onclick = () => {
   const bwBox = $("#dBotW"), bwIn = $(".num-input", bwBox);
   const bwPaint = () => {
     bwIn.value = botW;
-    $("#bwEx").textContent = "1280px 화면에서 약 " + Math.round(1280 * botW / 100) + "px";
+    $("#bwEx").textContent = "약 " + Math.round(1280 * botW / 100) + "px";
   };
   const bwSet = v => { botW = Math.max(15, Math.min(50, Math.round(v) || 40)); bwPaint(); };
   bwPaint();
