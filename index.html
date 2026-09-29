@@ -10367,8 +10367,8 @@ $("#btnMake").onclick = () => {
     <div class="ex-col">
     <div class="ex-cap">배포</div>
     ${sheetLink.from && !sheetLink.on ? note(ICO_WARN, "시트와의 연결이 끊어졌습니다",
-        "작업 중인 파일을 내 컴퓨터에 저장한 후, 연동할 시트의 사이드 패널에서 " +
-        "<b>편집기</b>를 다시 열어 작업 파일을 불러오십시오.", "warn") : ""}
+        "먼저, 작업 중인 파일을 내 컴퓨터에 저장하세요. 그리고 연동할 시트의 사이드 패널에서 " +
+        "<b>편집기</b>를 다시 열어 작업 파일을 불러오면 됩니다.", "warn") : ""}
     ${noName ? note(ICO_WARN, "명칭 없는 개체 " + noName + "개",
         "명칭이 없는 개체는 파일명과 시트의 열로 사용할 수 없습니다. 목록에서 명칭을 지정하여 주십시오.", "warn") : ""}
     ${note(ICO_FONT, "글꼴 " + fontList.length + "종 포함 · 약 " + fontMb + "MB",
