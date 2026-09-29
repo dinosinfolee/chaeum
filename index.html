@@ -1474,7 +1474,7 @@ body.start #tbar { display: none !important; }
 .gp-card {
   padding: 9px;
   border: 1px solid var(--border-strong); border-radius: var(--radius-lg);
-  background: #fff; box-shadow: var(--shadow-sm);
+  background: #fff; box-shadow: var(--shadow-lg);   /* 다른 창과 같은 그림자 */
 }
 .gp-card + .gp-card { margin-top: 10px; }
 .op-head { display: flex; align-items: center; gap: 6px; }
@@ -1483,10 +1483,12 @@ body.start #tbar { display: none !important; }
   flex: none; display: inline-flex; align-items: center; gap: 3px;
   height: 22px; padding: 0 5px;
   border: 0; border-radius: 6px; background: transparent;
-  color: var(--accent); cursor: pointer;
+  color: var(--text-faint); cursor: pointer;
   font-family: inherit; font-size: 11.5px; font-weight: 700;
 }
-.op-sort:hover { color: var(--accent-hover); background: var(--accent-bg); }
+.op-sort:hover { color: var(--text-muted); background: var(--bg-hover); }
+.op-sort.on { color: var(--accent); }
+.op-sort.on:hover { color: var(--accent-hover); background: var(--accent-bg); }
 .op-sort svg { width: 13px; height: 13px; }
 .box-caret {
   position: absolute; right: 2px; top: 50%; transform: translateY(-50%);
@@ -6472,10 +6474,27 @@ function bindOpts(m, f, fs2, fit) {
   const TRASH = svgWrap('<path d="M4 7h16"/><path d="M10 11v6M14 11v6"/>' +
     '<path d="M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M9 7V4h6v3"/>');
 
-  const keep = () => {
+  /* "" 아직 세우지 않음 · "asc" 오름차순 · "desc" 내림차순 */
+  const sortBtn = $("#opSort", m);
+  let sortMode = "";
+  const paintSort = () => {
+    const ico = sortMode === "desc"
+      ? '<path d="M7 4v16"/><path d="M3.6 16.6L7 20l3.4-3.4"/><path d="M13 6.5h8.5M13 11.5h6M13 16.5h3.5"/>'
+      : '<path d="M7 20V4"/><path d="M3.6 7.4L7 4l3.4 3.4"/><path d="M13 6.5h3.5M13 11.5h6M13 16.5h8.5"/>';
+    sortBtn.innerHTML = svgWrap(ico) + "<span>" +
+      (sortMode === "asc" ? "오름차순" : sortMode === "desc" ? "내림차순" : "정렬 기준") + "</span>";
+    sortBtn.classList.toggle("on", !!sortMode);
+    sortBtn.title = sortMode === "asc" ? "누르면 내림차순으로 세웁니다"
+                  : sortMode === "desc" ? "누르면 오름차순으로 세웁니다"
+                  : "누르면 가나다순으로 세웁니다";
+  };
+
+  const keep = from => {
     const v = $$(".op-in", list).map(i => i.value);
     picks.forEach(x => { x.opts = v.slice(); });
     renderBoxes(); renderList();
+    /* 손으로 고쳐 차례가 흐트러졌으면 다시 「정렬 기준」으로 돌아간다 */
+    if (from !== "sort" && sortMode) { sortMode = ""; paintSort(); }
   };
 
   /* 끌어서 차례 바꾸기 */
@@ -6510,7 +6529,7 @@ function bindOpts(m, f, fs2, fit) {
                   '<button class="op-del" type="button">' + TRASH + "</button>";
     const inp = $(".op-in", d);
     inp.value = text || "";
-    inp.oninput = keep;
+    inp.oninput = () => keep();
     inp.onkeydown = ev => {
       ev.stopPropagation();
       if (ev.key === "Enter") { ev.preventDefault(); add("", true, d); }
@@ -6544,28 +6563,22 @@ function bindOpts(m, f, fs2, fit) {
   $("#opAdd", m).onclick = ev => { ev.stopPropagation(); add("", true); };
   fit();                                   // 항목을 다 담은 뒤에 높이를 다시 잡는다
 
-  /* 가나다순 — 누를 때마다 오름차순과 내림차순이 갈마든다 */
-  const sortBtn = $("#opSort", m);
-  let asc = true;
-  const paintSort = () => {
-    sortBtn.innerHTML = svgWrap(asc
-      ? '<path d="M7 20V4"/><path d="M3.6 7.4L7 4l3.4 3.4"/><path d="M13 6.5h3.5M13 11.5h6M13 16.5h8.5"/>'
-      : '<path d="M7 4v16"/><path d="M3.6 16.6L7 20l3.4-3.4"/><path d="M13 6.5h8.5M13 11.5h6M13 16.5h3.5"/>') +
-      "<span>" + (asc ? "가나다" : "다나가") + "</span>";
-    sortBtn.title = asc ? "가나다순으로 세웁니다" : "가나다 역순으로 세웁니다";
-  };
-  paintSort();
+  /* 정렬 — 누를 때마다 오름차순·내림차순으로 세운다.
+     손으로 차례를 바꾸면 다시 「정렬 기준」이 된다. */
   sortBtn.onclick = ev => {
     ev.stopPropagation();
+    const next = sortMode === "asc" ? "desc" : "asc";
     const v = $$(".op-in", list).map(i => i.value);
     v.sort((a, b) => String(a).localeCompare(String(b), "ko"));
-    if (!asc) v.reverse();
+    if (next === "desc") v.reverse();
     list.innerHTML = "";
     v.forEach(t => list.appendChild(row(t, false)));
-    asc = !asc;
+    sortMode = next;
     paintSort();
-    keep();
+    keep("sort");
+    fit();
   };
+  paintSort();
 }
 
 /* 도구 모음이 종이 밖으로 삐져나가지 않게 가로 자리를 맞춘다 */
@@ -6746,11 +6759,9 @@ function fieldTools(f, box, pg) {
     if (overShown(f)) mid += btn("flow", "오버플로우 시", '<path d="M4.6 4.5v15M19.4 4.5v15"/>' +
              '<path d="M9.8 8.4L6.3 12l3.5 3.6"/><path d="M14.2 8.4l3.5 3.6-3.5 3.6"/>');
     if (GUIDED.indexOf(f.type) >= 0) {
-      const nOpt = f.type === "pick"
-        ? (f.opts || []).filter(x => String(x).trim() !== "").length : 0;
       mid += btn("guide",
-                 (f.guide ? "가이드 문구 · " + f.guide.slice(0, 20) : "가이드 문구") +
-                 (f.type === "pick" ? " · 선택 항목 " + nOpt + "개" : ""),
+                 f.type === "pick" ? "가이드 문구 · 선택 항목"
+                   : f.guide ? "가이드 문구 · " + f.guide.slice(0, 20) : "가이드 문구",
                  '<path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/>' +
              '<path d="M8 8.5h8M8 12h5"/>',
                  f.guide ? "on" : "");
