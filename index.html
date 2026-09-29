@@ -991,7 +991,7 @@ body.start #btnName { display: none; }
 .new-type .nt-cap  { margin-right: 8px; }
 .new-type .nt-cap2 { margin: 0 8px 0 0; }
 /* 구분 막대는 양옆을 넉넉히 비워 영역이 갈려 보이게 한다 */
-.new-type .tt-sep { height: 22px; margin: 0 16px; }
+.new-type .tt-sep { height: 20px; margin: 0 16px; }
 .nt-cap3 {
   margin: 0 3px 0 6px; font-size: 11.5px; font-weight: 600; color: var(--text-muted);
   flex: none; white-space: nowrap;
@@ -1866,7 +1866,13 @@ body.start #tbar { display: none !important; }
 .tt.off:hover { background: transparent; color: var(--text-muted); }
 .tt svg { width: 16px; height: 16px; flex: none; }
 .tt .tt-caret { width: 12px; height: 12px; opacity: .6; }
-.tt-sep { width: 1px; height: 20px; margin: 0 3px; background: var(--border-soft); }
+.tt-sep {
+  width: 1px; height: 20px; margin: 0 3px; flex: none;
+  background: var(--border);
+  /* 화면 배율이 1.25·1.5 일 때 1px 선은 흐려 보이기 쉽다.
+     선을 또렷한 빛깔로 두고 키를 맞추어 어느 자리에서나 같아 보이게 한다. */
+  border-radius: 1px;
+}
 .tt-lbl {
   padding: 0 4px 0 2px;
   font-size: 11px; font-weight: 700; color: var(--text-faint);
@@ -5576,6 +5582,20 @@ function editSizeVal(target, val, ph) {
 }
 
 /* 아무것도 고르지 않았을 때 — 끌어서 만들 유형을 한가운데에서 고른다 */
+/* 구분선을 화면의 점 눈금에 맞춘다.
+   배율이 1.25·1.5 인 화면에서는 1px 선이 놓인 자리에 따라
+   어떤 것은 또렷하고 어떤 것은 흐려 보인다. 자리를 반올림해 모두 같아 보이게 한다. */
+function snapSeps() {
+  const dpr = window.devicePixelRatio || 1;
+  $$("#tbar .tt-sep").forEach(el => {
+    el.style.transform = "";
+    const x = el.getBoundingClientRect().left * dpr;
+    const dx = (Math.round(x) - x) / dpr;
+    if (dx) el.style.transform = "translateX(" + dx.toFixed(3) + "px)";
+  });
+}
+window.addEventListener("resize", () => requestAnimationFrame(snapSeps));
+
 /* 글꼴 무리가 아랫줄로 내려가면 그 앞의 구분선은 자리만 차지한다 */
 function ntSepFix() {
   const bar = $(".new-type");
@@ -5628,7 +5648,7 @@ function paintNewType() {
       "</span>";
     host.appendChild(bar);
     ntSepFix();                      // 줄이 바뀌면 맨 앞 구분선은 걷어 낸다
-    requestAnimationFrame(ntSepFix);
+    requestAnimationFrame(() => { ntSepFix(); snapSeps(); });
 
     $$(".nt-type", bar).forEach(b => {
       b.onclick = () => {
@@ -6848,6 +6868,7 @@ function fieldTools(f, box, pg) {
 
     bar.classList.add("one");
     bar.innerHTML = h;
+    requestAnimationFrame(snapSeps);
 
     $$(".tt", bar).forEach(x => {
       x.onmousedown = e => e.stopPropagation();
