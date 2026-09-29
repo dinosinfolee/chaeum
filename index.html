@@ -6565,12 +6565,7 @@ function bindOpts(m, f, fs2, fit) {
     inp.onkeydown = ev => {
       ev.stopPropagation();
       if (ev.key === "Enter") { ev.preventDefault(); add("", true, d); }
-      if (ev.key === "Backspace" && inp.value === "" && list.children.length > 1) {
-        ev.preventDefault();
-        const prev = d.previousElementSibling;
-        d.remove(); keep(); fit();
-        if (prev) { const pi = $(".op-in", prev); pi.focus(); pi.select(); }
-      }
+      /* 빈 칸에서 지우기를 눌러도 줄은 남긴다 — 지우려면 휴지통을 누른다 */
     };
     $(".op-grip", d).onmousedown = ev => startDrag(ev, d);
     $(".op-del", d).onclick = ev => {
