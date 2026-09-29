@@ -10241,6 +10241,9 @@ $("#btnMake").onclick = () => {
     <div class="ex-cols">
     <div class="ex-col">
     <div class="ex-cap">배포</div>
+    ${sheetLink.from && !sheetLink.on ? note(ICO_WARN, "시트와의 연결이 끊어졌습니다",
+        "이대로 내보내면 시트에 열이 생성되지 않고 <b>제출 버튼이 없는</b> 양식이 되며, 파일은 이 컴퓨터에 저장됩니다. " +
+        "시트의 사이드 패널에서 <b>편집기</b>를 다시 열고, 첫 화면의 <b>내 드라이브에서</b>로 작업본을 불러오십시오.", "warn") : ""}
     ${noName ? note(ICO_WARN, "명칭 없는 개체 " + noName + "개",
         "명칭이 없는 개체는 파일명과 시트의 열로 사용할 수 없습니다. 목록에서 명칭을 지정하여 주십시오.", "warn") : ""}
     ${note(ICO_FONT, "글꼴 " + fontList.length + "종 포함 · 약 " + fontMb + "MB",
@@ -11365,6 +11368,16 @@ const sheetLink = {
   from: /(^|[#&])connect=sheet\b/.test(location.hash),   // 시트에서 열었는가
   get on() { return this.from && !!window.opener && !window.opener.closed; }
 };
+/* 시트에서 열었는데 연결이 끊어졌으면 한 번 일러 둔다 —
+   그대로 내보내면 시트에 열이 생기지 않기 때문이다 */
+let linkWarned = false;
+function checkSheetLink() {
+  if (!sheetLink.from || sheetLink.on || linkWarned) return;
+  linkWarned = true;
+  toast("시트와의 연결이 끊어졌습니다 · 시트의 사이드 패널에서 편집기를 다시 열어 주십시오", "warn", 8000);
+}
+window.addEventListener("focus", () => setTimeout(checkSheetLink, 300));
+
 /* 시트에서 열었으면 저장이 어디로 가는지 미리 알린다 */
 (function () {
   if (!sheetLink.from) return;
