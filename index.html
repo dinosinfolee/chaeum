@@ -10315,6 +10315,9 @@ async function loadFormFile(file) {
     S.header  = fixHF(cfg.header);
     S.footer  = fixHF(cfg.footer);
     S.collect = fixCollect(cfg.submit && cfg.submit.collect);
+    S.submitCfg = (cfg.submitCfg && cfg.submitCfg.identify)
+      ? { identify: cfg.submitCfg.identify, closesAt: cfg.submitCfg.closesAt || "" }
+      : { identify: "domain", closesAt: "" };
     S.folder  = (cfg.submit && cfg.submit.folder) || { id: "", name: "" };
     paintBotBtn();
     S.seq = cfg.seq || (cfg.fields.length + 1);
@@ -11073,6 +11076,10 @@ async function buildFormHtml(title, pattern, outMode, offline, submit, preview) 
     subOn: !!S.subOn,
     botW: Math.max(15, Math.min(50, Number(S.botW) || 40)),
     botTheme: S.botTheme === "dark" ? "dark" : "light",
+    submitCfg: {                                   // 다시 열 때 그대로 되살아나도록
+      identify: (S.submitCfg && S.submitCfg.identify) || "domain",
+      closesAt: (S.submitCfg && S.submitCfg.closesAt) || ""
+    },
     askMail: !!(sheetLink.on && S.askMail),
     sigFile: !!(sheetLink.on && S.sigFile),
     mailNote: (sheetLink.on && S.askMail) ? String(S.mailNote || "").trim() : "",
