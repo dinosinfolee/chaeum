@@ -11647,6 +11647,9 @@ function connectSheet() {
       form: {
         title: S.srcName || "신청서",
         collect: S.collect || "data",
+        /* 제출 자격·마감과 보관 폴더도 함께 보내 시트에 적어 둔다 */
+        submitCfg: S.submitCfg || { identify: "domain", closesAt: "" },
+        folder: S.folder || { id: "", name: "" },
         fields: named.map(f => ({ id: f.id, name: f.name.trim(), type: f.type }))
                      .concat(S.askMail ? [{ id: "mail", name: MAIL_COL, type: "text" }] : [])
       }
