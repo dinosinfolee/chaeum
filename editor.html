@@ -2455,6 +2455,8 @@ body.start #side { display: none !important; }
 #dropBox h2 { margin: 0 0 6px; font-size: 17px; font-weight: 600; }
 #dropBox p  { margin: 0 0 18px; font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
 #dropHint { font-size: 12.5px; color: var(--text-faint); text-align: center; line-height: 1.75; }
+#dropHint p { margin: 0; }
+#dropHint p + p { margin-top: 13px; }   /* 쓰는 법과 책임 안내 사이를 띄운다 */
 /* 창 왼쪽 아래에 늘 머무는 저작권 표시 */
 #crMark {
   position: fixed; left: 15px; bottom: 11px; z-index: 210;
@@ -2866,11 +2868,15 @@ body:not(.booting) #boot { opacity: 0; pointer-events: none; }
       </div>
     </div>
     <div id="dropHint">
-      캡처한 그림은 <b>Ctrl</b>+<b>V</b> 로 바로 붙여넣을 수 있습니다.<br>
-      한글 문서는 <b>파일 › PDF로 저장하기</b>를 통해 변환한 후 사용하십시오.<br>
-      본 도구는 문서와 입력 내용을 외부로 전송하지 않습니다.<br>
-      구글 연동·제출 기능을 사용하는 경우에 한하여 담당자 본인의 계정으로 전달됩니다.<br>
-      자료의 제공과 관리, 민감 정보의 보안 처리에 대한 책임은 담당자에게 있습니다.
+      <p>
+        캡처한 그림은 <b>Ctrl</b>+<b>V</b> 로 바로 붙여넣을 수 있습니다.<br>
+        한글 문서는 <b>파일 › PDF로 저장하기</b>를 통해 변환한 후 사용하십시오.
+      </p>
+      <p>
+        본 도구는 문서와 입력 내용을 외부로 전송하지 않습니다.<br>
+        구글 연동·제출 기능을 사용하는 경우에 한하여 담당자 본인의 계정으로 전달됩니다.<br>
+        자료의 제공과 관리, 민감 정보의 보안 처리에 대한 책임은 담당자에게 있습니다.
+      </p>
     </div>
   </div>
 </div>
