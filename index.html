@@ -3652,6 +3652,38 @@ async function draftGet() {
     q.onerror = () => rej(q.error);
   });
 }
+/* 어느 시트인지 끝내 알 수 없을 때 쓰는 자리 — 이 탭에만 딸려 있다.
+   새로고침하면 그대로 이어 가되, 다른 시트에서 연 편집기에는 결코 보이지 않는다. */
+function tabDraftKey() {
+  let sid = "";
+  try { sid = sessionStorage.getItem("chaeum_tab") || ""; } catch (e) {}
+  if (!sid) {
+    sid = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    try { sessionStorage.setItem("chaeum_tab", sid); } catch (e) {}
+  }
+  return "tab:" + sid;
+}
+/* 사흘이 지난 탭 자리는 치운다 — 닫힌 탭의 것이 쌓이지 않도록 */
+async function draftSweep(keep) {
+  try {
+    const db = await draftDB();
+    const t = db.transaction(DRAFT_ST, "readwrite");
+    const st = t.objectStore(DRAFT_ST);
+    const old = Date.now() - 3 * 24 * 60 * 60 * 1000;
+    const q = st.openCursor();
+    q.onsuccess = () => {
+      const c = q.result;
+      if (!c) return;
+      const k = c.key;
+      if (typeof k === "string" && k.indexOf("tab:") === 0 && k !== keep) {
+        const at = (c.value && c.value.at) || 0;
+        if (at < old) st.delete(k);
+      }
+      c.continue();
+    };
+  } catch (e) {}
+}
+
 async function draftClear() {
   try {
     const db = await draftDB();
@@ -3745,12 +3777,19 @@ function applyDraft(d) {
 /* 열자마자 하던 데서 그대로 이어 간다.
    되살리기 전에는 첫 화면이 비치지 않도록 덮어 둔다. */
 async function askDraft() {
-  /* 시트에서 열었으면 그 시트의 작업본을 집는다 */
-  if (sheetLink.on) {
-    try {
-      const info = await driveAsk("sheetInfo", "sheetInfoDone", null, 6000);
-      if (info && info.ssId) draftKey = "ss:" + info.ssId;
-    } catch (e) { /* 답이 없으면 지금까지처럼 한 자리를 쓴다 */ }
+  /* 시트에서 열었으면 그 시트의 작업본을 집는다.
+     어느 시트인지 끝내 알 수 없으면 이 탭에만 딸린 자리를 쓴다 —
+     다른 시트에서 하던 일이 건너와 보이는 일이 없도록. */
+  if (sheetLink.from) {
+    let ssId = "";
+    if (sheetLink.on) {
+      try {
+        const info = await driveAsk("sheetInfo", "sheetInfoDone", null, 6000);
+        ssId = (info && info.ssId) || "";
+      } catch (e) { ssId = ""; }
+    }
+    draftKey = ssId ? "ss:" + ssId : tabDraftKey();
+    if (!ssId) draftSweep(draftKey);
   }
   let d = null;
   try { d = await draftGet(); } catch (e) { d = null; }
