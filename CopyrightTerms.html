@@ -91,7 +91,6 @@ pre {
   font-size: 12.5px; line-height: 1.7; color: var(--muted);
   white-space: pre-wrap; word-break: break-word;
 }
-.en { color: var(--text); }
 .sub { font-size: 13.5px; color: var(--muted); }
 footer {
   margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line);
@@ -163,83 +162,15 @@ PDF 또는 HTML 형식으로 저장하는 단일 파일 도구입니다. 본 저
 
 <hr>
 
-<h1 class="en">Chaeum — Copyright and Terms of Use</h1>
-<p class="rights">© 2026 Sani. All rights reserved.</p>
-
-<p>Chaeum is a single-file tool that overlays fillable fields on an existing
-document, distributes it as a form, and saves the completed result as a PDF or
-an HTML file. Copyright in this work belongs to the author named above.</p>
-
-<h2>Definitions</h2>
-<p>This tool is built to help collect information in document form. In this
-document:</p>
-<ul>
-  <li><strong>Administrator</strong> — the person who builds and distributes a
-      form with this tool and who collects and manages the returned data</li>
-  <li><strong>Respondent</strong> — the person who receives the form and fills
-      it in</li>
-</ul>
-<p>Because it is the administrator who decides to collect the data and defines
-its scope, responsibility for managing the collected data also rests with the
-administrator.</p>
-
-<h2>Permitted</h2>
-<ul>
-  <li><strong>Free use for work and educational purposes</strong> by public
-      institutions, including schools</li>
-  <li><strong>Unrestricted distribution of the forms and output files</strong>
-      produced with the tool (a form the administrator creates with Chaeum is
-      entirely theirs)</li>
-  <li><strong>Redistribution of the released file</strong>
-      (<code>채움.html</code>) <strong>as-is, unmodified</strong></li>
-</ul>
-
-<h2>Not permitted</h2>
-<ul>
-  <li>Copying the code, in whole or in part, <strong>into another work</strong></li>
-  <li>Redistributing it with the <strong>author attribution removed or
-      altered</strong></li>
-  <li>Use or redistribution for <strong>commercial purposes</strong>, including
-      sale, subscription, or advertising</li>
-  <li>Modifying it and <strong>releasing it as a different tool</strong></li>
-</ul>
-<p>Any use beyond the scope above requires the author's prior written consent.</p>
-
-<h2>Disclaimer of warranty</h2>
-<p>This tool is provided <strong>as is</strong>. The author makes no warranty of
-any kind, including fitness for a particular purpose, and is not liable for any
-loss of data or other damages arising from its use. Please apply your own
-security measures to important documents.</p>
-
-<p>This tool sends no document or entered content to the author or to any third
-party. If the administrator enables the Google integration and the submit
-feature, the form definition and the entered content are sent to
-<strong>the administrator's own Google account</strong> and stored in that
-account's Form and Sheet.</p>
-
-<div class="note">
-  <strong>Deciding what data to collect, informing respondents and obtaining
-  their consent, retaining and disposing of the returned data, and securing
-  sensitive or personal information — including passwords and access control —
-  are entirely the administrator's responsibility.</strong> The author holds
-  none of the data collected with this tool and takes no part in its processing.
-</div>
-
-<hr>
-
-<h1>제3자 구성 요소 · Third-Party Components</h1>
+<h1>제3자 구성 요소</h1>
 
 <p>채움은 다음 저작물을 포함하거나 호출하여 사용합니다. 각 저작물의 권리는
 원저작자에게 있으며, 하기 고지는 해당 라이선스가 요구하는 바에 따라 원문 그대로
 유지되어야 합니다.</p>
-<p class="sub">Chaeum includes or loads the works listed below. All rights in
-them belong to their respective authors, and the notices below must be retained
-as required by their licenses.</p>
-
-<h2>라이브러리 · Libraries</h2>
+<h2>라이브러리</h2>
 
 <h3>PDF.js — Apache License 2.0</h3>
-<p class="sub">원본 PDF의 화면 표시에 사용합니다. / Used to render source PDFs on screen.
+<p class="sub">원본 PDF의 화면 표시에 사용합니다.
 &nbsp;<a href="https://github.com/mozilla/pdf.js" target="_blank" rel="noopener">github.com/mozilla/pdf.js</a></p>
 <pre>Copyright 2012 Mozilla Foundation and contributors
 
@@ -256,7 +187,7 @@ See the License for the specific language governing permissions and
 limitations under the License.</pre>
 
 <h3>pdf-lib — MIT License</h3>
-<p class="sub">PDF 생성 및 문자 출력에 사용합니다. / Used to create PDFs and draw text.
+<p class="sub">PDF 생성 및 문자 출력에 사용합니다.
 &nbsp;<a href="https://github.com/Hopding/pdf-lib" target="_blank" rel="noopener">github.com/Hopding/pdf-lib</a></p>
 <pre>Copyright (c) 2019 Andrew Dillon
 
@@ -280,8 +211,7 @@ SOFTWARE.</pre>
 
 <h3>@pdf-lib/fontkit — MIT License</h3>
 <p class="sub">PDF에 글꼴을 포함시키는 데 사용합니다. Devon Govett의 fontkit에서
-Andrew Dillon이 파생한 저작물입니다. / Used to embed fonts in PDFs; a fork by
-Andrew Dillon of fontkit by Devon Govett.
+Andrew Dillon이 파생한 저작물입니다.
 &nbsp;<a href="https://github.com/Hopding/fontkit" target="_blank" rel="noopener">github.com/Hopding/fontkit</a></p>
 <pre>Copyright (c) 2014 Devon Govett
 Copyright (c) 2019 Andrew Dillon
@@ -303,14 +233,11 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre>
 
-<h2>글꼴 · Fonts</h2>
+<h2>글꼴</h2>
 <p>하기 글꼴은 모두 <strong>SIL Open Font License 1.1</strong> 로 배포됩니다. 본
 라이선스는 글꼴을 문서 또는 프로그램에 포함하여 배포하는 것을 허용하며, 글꼴 자체를
 단독으로 판매하는 행위만을 금지합니다.</p>
-<p class="sub">All fonts below are licensed under the SIL Open Font License 1.1,
-which permits bundling and redistributing them with a document or program, and
-prohibits only selling the fonts by themselves.
-&nbsp;전문 · Full text: <a href="https://openfontlicense.org/" target="_blank" rel="noopener">openfontlicense.org</a></p>
+<p class="sub">전문: <a href="https://openfontlicense.org/" target="_blank" rel="noopener">openfontlicense.org</a></p>
 
 <h3>고딕 · 굵은고딕 · 명조 · 굵은명조 · 손글씨 · 붓글씨 · 고정폭</h3>
 <p class="sub">Nanum Gothic, Nanum Myeongjo, Nanum Pen Script,
